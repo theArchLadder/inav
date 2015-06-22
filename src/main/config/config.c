@@ -69,6 +69,7 @@
 
 #include "config/runtime_config.h"
 #include "config/config.h"
+#include "config/parameter_group.h"
 
 #include "config/config_profile.h"
 #include "config/config_master.h"
@@ -91,6 +92,15 @@ static const uint8_t EEPROM_CONF_VERSION = 117;
 
 extern uint32_t __config_start;
 extern uint32_t __config_end;
+
+extern const pgRegistry_t __pg_registry_start;
+extern const pgRegistry_t __pg_registry_end;
+
+static const pgRegistry_t masterRegistry PG_REGISTRY_SECTION = {
+    .base = &masterConfig,
+    .size = sizeof(masterConfig),
+    .pgn = 0,
+};
 
 static void resetAccelerometerTrims(flightDynamicsTrims_t * accZero, flightDynamicsTrims_t * accGain)
 {
@@ -922,10 +932,15 @@ void writeEEPROM(void)
 
     // write it
     for (int attempt = 0; attempt < 3; attempt++) {
-        flash_stm32_start(&writer, (uintptr_t)&__config_start);
+        for (const pgRegistry_t *reg = &__pg_registry_start;
+             reg < &__pg_registry_end;
+             reg++) {
 
-        if (flash_stm32_write(&writer, &masterConfig, sizeof(masterConfig)) == 0) {
-            break;
+            flash_stm32_start(&writer, (uintptr_t)&__config_start);
+
+            if (flash_stm32_write(&writer, &masterConfig, sizeof(masterConfig)) == 0) {
+                break;
+            }
         }
     }
 
