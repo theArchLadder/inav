@@ -32,17 +32,20 @@ void serialPrint(serialPort_t *instance, const char *str)
 
 uint32_t serialGetBaudRate(serialPort_t *instance)
 {
+    if (!instance) return 0;
     return instance->baudRate;
 }
 
 void serialWrite(serialPort_t *instance, uint8_t ch)
 {
+    if (!instance) return;
     instance->vTable->serialWrite(instance, ch);
 }
 
 
 void serialWriteBuf(serialPort_t *instance, uint8_t *data, int count)
 {
+    if (!instance) return;
     if (instance->vTable->writeBuf) {
         instance->vTable->writeBuf(instance, data, count);
     } else {
@@ -58,47 +61,56 @@ void serialWriteBuf(serialPort_t *instance, uint8_t *data, int count)
 
 uint8_t serialRxBytesWaiting(serialPort_t *instance)
 {
+    if (!instance) return 0;
     return instance->vTable->serialTotalRxWaiting(instance);
 }
 
 uint8_t serialTxBytesFree(serialPort_t *instance)
 {
+    if (!instance) return 0;
     return instance->vTable->serialTotalTxFree(instance);
 }
 
 uint8_t serialRead(serialPort_t *instance)
 {
+    if (!instance) return 0;
     return instance->vTable->serialRead(instance);
 }
 
 void serialSetBaudRate(serialPort_t *instance, uint32_t baudRate)
 {
+    if (!instance) return;
     instance->vTable->serialSetBaudRate(instance, baudRate);
 }
 
 bool isSerialTransmitBufferEmpty(serialPort_t *instance)
 {
+    if (!instance) return true;
     return instance->vTable->isSerialTransmitBufferEmpty(instance);
 }
 
 void serialSetMode(serialPort_t *instance, portMode_t mode)
 {
+    if (!instance) return;
     instance->vTable->setMode(instance, mode);
 }
 
 void serialWriteBufShim(void *instance, uint8_t *data, int count)
 {
+    if (!instance) return;
     serialWriteBuf((serialPort_t *)instance, data, count);
 }
 
 void serialBeginWrite(serialPort_t *instance)
 {
+    if (!instance) return;
     if (instance->vTable->beginWrite)
         instance->vTable->beginWrite(instance);
 }
 
 void serialEndWrite(serialPort_t *instance)
 {
+    if (!instance) return;
     if (instance->vTable->endWrite)
         instance->vTable->endWrite(instance);
 }
