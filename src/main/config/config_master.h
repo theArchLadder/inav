@@ -19,10 +19,6 @@
 
 // System-wide
 typedef struct master_t {
-    uint8_t version;
-    uint16_t size;
-    uint8_t magic_be;                       // magic number, should be 0xBE
-
     uint8_t mixerMode;
     uint32_t enabledFeatures;
     uint8_t persistentFlags;
@@ -112,9 +108,6 @@ typedef struct master_t {
 
     uint32_t beeper_off_flags;
     uint32_t prefered_beeper_off_flags;
-
-    uint8_t magic_ef;                       // magic number, should be 0xEF
-    uint8_t chk;                            // XOR checksum
 } master_t;
 
 extern master_t masterConfig;
