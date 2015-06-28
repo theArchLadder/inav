@@ -218,6 +218,7 @@ COMMON_SRC = build_config.c \
 		   $(TARGET_SRC) \
 		   config/config.c \
 		   config/runtime_config.c \
+		   config/config_streamer.c \
 		   common/maths.c \
 		   common/printf.c \
 		   common/typeconversion.c \
@@ -233,7 +234,6 @@ COMMON_SRC = build_config.c \
 		   flight/hil.c \
 		   flight/mixer.c \
 		   drivers/bus_i2c_soft.c \
-		   drivers/flash_stm32.c \
 		   drivers/serial.c \
 		   drivers/sound_beeper.c \
 		   drivers/system.c \
