@@ -27,8 +27,6 @@
 
 #define SERIAL_PORT_COUNT 4
 
-#define MAX_SIMULTANEOUS_ADJUSTMENT_COUNT 6
-
 typedef enum
 {
     Mode_TEST = 0x0,
@@ -44,6 +42,9 @@ typedef struct
 {
     void* test;
 } TIM_TypeDef;
+
+typedef struct DMA_Channel_Struct DMA_Channel_TypeDef;
+typedef struct USART_Struct USART_TypeDef;
 
 typedef enum {DISABLE = 0, ENABLE = !DISABLE} FunctionalState;
 
