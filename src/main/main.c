@@ -120,7 +120,7 @@ void gpsPreInit(gpsConfig_t *initialGpsConfig);
 void gpsInit(serialConfig_t *serialConfig, gpsConfig_t *initialGpsConfig);
 void imuInit(void);
 void displayInit(rxConfig_t *intialRxConfig);
-void ledStripInit(ledConfig_t *ledConfigsToUse, hsvColor_t *colorsToUse);
+void loop(void);
 void spektrumBind(rxConfig_t *rxConfig);
 const sonarHardware_t *sonarGetHardwareConfiguration(batteryConfig_t *batteryConfig);
 void sonarInit(const sonarHardware_t *sonarHardware);
