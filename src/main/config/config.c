@@ -18,6 +18,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+#include <stddef.h>
 
 #include "platform.h"
 
@@ -82,9 +83,7 @@ void useRcControlsConfig(modeActivationCondition_t *modeActivationConditions, es
 // Header for the saved copy.
 typedef struct {
     uint8_t format;
-    uint8_t pad1;
-    uint16_t pad2;
-} configHeader_t;
+} PG_PACKED configHeader_t;
 
 // Header for each stored PG.
 typedef struct {
@@ -94,14 +93,13 @@ typedef struct {
     uint8_t pgn;
     uint8_t format;
     uint8_t pg[];
-} configRecord_t;
+} PG_PACKED configRecord_t;
 
 // Footer for the saved copy.
 typedef struct {
-    uint16_t pad1;
-    uint8_t pad2;
+    uint16_t terminator;
     uint8_t chk;
-} configFooter_t;
+} PG_PACKED configFooter_t;
 
 // Used to check the compiler packing at build time.
 typedef struct {
@@ -735,9 +733,6 @@ static bool scanEEPROM(bool andLoad)
     if (header->format != EEPROM_CONF_VERSION) {
         return false;
     }
-    if (header->pad1 != 0 || header->pad2 != 0) {
-        return false;
-    }
     chk = updateChecksum(chk, header, sizeof(*header));
     p += sizeof(*header);
 
@@ -970,6 +965,10 @@ void initEEPROM(void)
     BUILD_BUG_ON(offsetof(packingTest_t, byte) != 0);
     BUILD_BUG_ON(offsetof(packingTest_t, word) != 1);
     BUILD_BUG_ON(sizeof(packingTest_t) != 5);
+
+    BUILD_BUG_ON(sizeof(configHeader_t) != 1);
+    BUILD_BUG_ON(sizeof(configFooter_t) != 3);
+    BUILD_BUG_ON(sizeof(configRecord_t) != 4);
 }
 
 void readEEPROM(void)
@@ -1016,10 +1015,7 @@ void writeEEPROM(void)
 
         configHeader_t header = {
             .format = EEPROM_CONF_VERSION,
-            .pad1 = 0,
-            .pad2 = 0,
         };
-        BUILD_BUG_ON(sizeof(header) != 4);
 
         config_streamer_write(&streamer, &header, sizeof(header));
 
@@ -1038,8 +1034,7 @@ void writeEEPROM(void)
         }
 
         configFooter_t footer = {
-            .pad1 = 0,
-            .pad2 = 0,
+            .terminator = 0,
             .chk = ~config_streamer_chk(&streamer),
         };
 
