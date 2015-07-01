@@ -23,12 +23,13 @@
 #define MSP_PROTOCOL_VERSION                0
 
 #define API_VERSION_MAJOR                   1 // increment when major changes are made
-#define API_VERSION_MINOR                   11 // increment when any change is made, reset to zero when major changes are released after changing API_VERSION_MAJOR
+#define API_VERSION_MINOR                   15 // increment when any change is made, reset to zero when major changes are released after changing API_VERSION_MAJOR
 
 #define API_VERSION_LENGTH                  2
 
 #define MULTIWII_IDENTIFIER "MWII";
 #define CLEANFLIGHT_IDENTIFIER "CLFL"
+#define INAV_IDENTIFIER "INAV"
 #define BASEFLIGHT_IDENTIFIER "BAFL";
 
 #define FLIGHT_CONTROLLER_IDENTIFIER_LENGTH 4
@@ -60,12 +61,12 @@
 #define MSP_BOARD_INFO                  4    //out message
 #define MSP_BUILD_INFO                  5    //out message
 
+#define MSP_SET_HIL_STATE               11    // in message  roll , pitch , trueHeading, baroAltitude, accel forward, right, up
+#define MSP_HIL_STATE                   12    // out message
+
 //
 // MSP commands for Cleanflight original features
 //
-#define MSP_CHANNEL_FORWARDING          32    //out message         Returns channel forwarding settings
-#define MSP_SET_CHANNEL_FORWARDING      33    //in message          Channel forwarding settings
-
 #define MSP_MODE_RANGES                 34    //out message         Returns all mode ranges
 #define MSP_SET_MODE_RANGE              35    //in message          Sets a single mode range
 
@@ -120,6 +121,10 @@
 
 #define MSP_FAILSAFE_CONFIG             75 //out message         Returns FC Fail-Safe settings
 #define MSP_SET_FAILSAFE_CONFIG         76 //in message          Sets FC Fail-Safe settings
+
+#define MSP_RXFAIL_CONFIG               77 //out message         Returns RXFAIL settings
+#define MSP_SET_RXFAIL_CONFIG           78 //in message          Sets RXFAIL settings
+
 //
 // Baseflight MSP commands (if enabled they exist in Cleanflight)
 //
@@ -146,9 +151,9 @@
 
 #define MSP_STATUS               101    //out message         cycletime & errors_count & sensor present & box activation & current setting number
 #define MSP_RAW_IMU              102    //out message         9 DOF
-#define MSP_SERVO                103    //out message         8 servos
-#define MSP_MOTOR                104    //out message         8 motors
-#define MSP_RC                   105    //out message         8 rc chan and more
+#define MSP_SERVO                103    //out message         servos
+#define MSP_MOTOR                104    //out message         motors
+#define MSP_RC                   105    //out message         rc channels and more
 #define MSP_RAW_GPS              106    //out message         fix, numsat, lat, lon, alt, speed, ground course
 #define MSP_COMP_GPS             107    //out message         distance home, direction home
 #define MSP_ATTITUDE             108    //out message         2 angles 1 heading
@@ -163,9 +168,12 @@
 #define MSP_PIDNAMES             117    //out message         the PID names
 #define MSP_WP                   118    //out message         get a WP, WP# is in the payload, returns (WP#, lat, lon, alt, flags) WP#0-home, WP#16-poshold
 #define MSP_BOXIDS               119    //out message         get the permanent IDs associated to BOXes
-#define MSP_SERVO_CONF           120    //out message         Servo settings
+#define MSP_SERVO_CONFIGURATIONS 120    //out message         All servo configurations.
 #define MSP_NAV_STATUS           121    //out message         Returns navigation status
 #define MSP_NAV_CONFIG           122    //out message         Returns navigation parameters
+#define MSP_3D                   124    //out message         Settings needed for reversible ESCs
+#define MSP_RC_DEADBAND          125    //out message         deadbands for yaw alt pitch roll
+#define MSP_SENSOR_ALIGNMENT     126    //out message         orientation of acc,gyro,mag
 
 #define MSP_SET_RAW_RC           200    //in message          8 rc chan
 #define MSP_SET_RAW_GPS          201    //in message          fix, numsat, lat, lon, alt, speed
@@ -179,9 +187,13 @@
 #define MSP_SET_WP               209    //in message          sets a given WP (WP#,lat, lon, alt, flags)
 #define MSP_SELECT_SETTING       210    //in message          Select Setting Number (0-2)
 #define MSP_SET_HEAD             211    //in message          define a new heading hold direction
-#define MSP_SET_SERVO_CONF       212    //in message          Servo settings
+#define MSP_SET_SERVO_CONFIGURATION 212    //in message          Servo settings
 #define MSP_SET_MOTOR            214    //in message          PropBalance function
 #define MSP_SET_NAV_CONFIG       215    //in message          Sets nav config parameters - write to the eeprom
+#define MSP_SET_3D               217    //in message          Settings needed for reversible ESCs
+#define MSP_SET_RC_DEADBAND      218    //in message          deadbands for yaw alt pitch roll
+#define MSP_SET_RESET_CURR_PID   219    //in message          resetting the current pid profile to defaults
+#define MSP_SET_SENSOR_ALIGNMENT 220    //in message          set the orientation of the acc,gyro,mag
 
 // #define MSP_BIND                 240    //in message          no param
 
@@ -191,7 +203,12 @@
 #define MSP_DEBUG                254    //out message         debug1,debug2,debug3,debug4
 
 // Additional commands that are not compatible with MultiWii
+#define MSP_STATUS_EX            150    //out message         cycletime, errors_count, CPU load, sensor present etc
 #define MSP_UID                  160    //out message         Unique device ID
+#define MSP_GPSSVINFO            164    //out message         get Signal Strength (only U-Blox)
+#define MSP_GPSSTATISTICS        166    //out message         get GPS debugging data
 #define MSP_ACC_TRIM             240    //out message         get acc angle trim values
 #define MSP_SET_ACC_TRIM         239    //in message          set acc angle trim values
-#define MSP_GPSSVINFO            164    //out message         get Signal Strength (only U-Blox)
+#define MSP_SERVO_MIX_RULES      241    //out message         Returns servo mixer configuration
+#define MSP_SET_SERVO_MIX_RULE   242    //in message          Sets servo mixer configuration
+#define MSP_SET_1WIRE            243    //in message          Sets 1Wire paththrough
