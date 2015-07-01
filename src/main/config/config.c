@@ -119,9 +119,7 @@ controlRateConfig_t *currentControlRateProfile;
 static const uint8_t EEPROM_CONF_VERSION = 200;
 
 extern uint8_t __config_start;
-extern uint8_t __config_end;
 
-extern const pgRegistry_t __pg_registry[];
 static const void *pg_registry_tail PG_REGISTRY_TAIL_SECTION;
 
 static const pgRegistry_t masterRegistry PG_REGISTRY_SECTION = {
@@ -400,7 +398,10 @@ static void resetConf(void)
     int i;
 
     // Clear all configuration
-    memset(&masterConfig, 0, sizeof(master_t));
+    PG_FOREACH(reg) {
+        memset(reg->base, 0, reg->size);
+    }
+
     setProfile(0);
     setControlRateProfile(0);
 
@@ -431,9 +432,6 @@ static void resetConf(void)
 
     resetSensorAlignment(&masterConfig.sensorAlignmentConfig);
 
-    masterConfig.boardAlignment.rollDeciDegrees = 0;
-    masterConfig.boardAlignment.pitchDeciDegrees = 0;
-    masterConfig.boardAlignment.yawDeciDegrees = 0;
     masterConfig.acc_hardware = ACC_DEFAULT;     // default/autodetect
     masterConfig.yaw_control_direction = 1;
     masterConfig.gyroConfig.gyroMovementCalibrationThreshold = 32;
@@ -696,10 +694,7 @@ static const pgRegistry_t *findPGN(const configRecord_t *record)
     // the first entry in the struct.
     BUILD_BUG_ON(offsetof(pgRegistry_t, base) != 0);
 
-    for (const pgRegistry_t *reg = __pg_registry;
-         reg->base !=NULL;
-         reg++) {
-
+    PG_FOREACH(reg) {
         if (reg->pgn == record->pgn && reg->format == record->format) {
             return reg;
         }
@@ -954,7 +949,7 @@ void validateAndFixConfig(void)
 
 void applyAndSaveBoardAlignmentDelta(int16_t roll, int16_t pitch)
 {
-    updateBoardAlignment(&masterConfig.boardAlignment, roll, pitch);
+    updateBoardAlignment(roll, pitch);
 
     saveConfigAndNotify();
 }
@@ -1019,10 +1014,7 @@ void writeEEPROM(void)
 
         config_streamer_write(&streamer, &header, sizeof(header));
 
-        for (const pgRegistry_t *reg = __pg_registry;
-             reg->base != NULL;
-             reg++) {
-
+        PG_FOREACH(reg) {
             configRecord_t record = {
                 .size = sizeof(configRecord_t) + reg->size,
                 .pgn = reg->pgn,
