@@ -523,12 +523,12 @@ static void resetConf(void)
     currentProfile->throttle_tilt_compensation_strength = 0;      // 0-100, 0 - disabled
 
     // Failsafe Variables
-    masterConfig.failsafeConfig.failsafe_delay = 10;              // 1sec
-    masterConfig.failsafeConfig.failsafe_off_delay = 200;         // 20sec
-    masterConfig.failsafeConfig.failsafe_throttle = 1000;         // default throttle off.
-    masterConfig.failsafeConfig.failsafe_kill_switch = 0;         // default failsafe switch action is identical to rc link loss
-    masterConfig.failsafeConfig.failsafe_throttle_low_delay = 100; // default throttle low delay for "just disarm" on failsafe condition
-    masterConfig.failsafeConfig.failsafe_procedure = 0;           // default full failsafe procedure is 0: auto-landing
+    failsafeConfig.failsafe_delay = 10;              // 1sec
+    failsafeConfig.failsafe_off_delay = 200;         // 20sec
+    failsafeConfig.failsafe_throttle = 1000;         // default throttle off.
+    failsafeConfig.failsafe_kill_switch = 0;         // default failsafe switch action is identical to rc link loss
+    failsafeConfig.failsafe_throttle_low_delay = 100; // default throttle low delay for "just disarm" on failsafe condition
+    failsafeConfig.failsafe_procedure = 0;           // default full failsafe procedure is 0: auto-landing
 
 #ifdef USE_SERVOS
     // servos
@@ -603,8 +603,8 @@ static void resetConf(void)
     masterConfig.looptime = 2000;
     currentProfile->pidProfile.P8[ROLL] = 36;
     currentProfile->pidProfile.P8[PITCH] = 36;
-    masterConfig.failsafeConfig.failsafe_delay = 2;
-    masterConfig.failsafeConfig.failsafe_off_delay = 0;
+    failsafeConfig.failsafe_delay = 2;
+    failsafeConfig.failsafe_off_delay = 0;
     currentControlRateProfile->rcRate8 = 130;
     currentControlRateProfile->rates[FD_PITCH] = 20;
     currentControlRateProfile->rates[FD_ROLL] = 20;
@@ -789,7 +789,7 @@ void activateConfig(void)
     telemetryUseConfig(&masterConfig.telemetryConfig);
 #endif
 
-    useFailsafeConfig(&masterConfig.failsafeConfig);
+    useFailsafeConfig();
 
     setAccelerationZero(&masterConfig.accZero);
     setAccelerationGain(&masterConfig.accGain);

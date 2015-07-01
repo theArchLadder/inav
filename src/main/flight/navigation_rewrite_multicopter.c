@@ -557,10 +557,8 @@ static void applyMulticopterEmergencyLandingController(uint32_t currentTime)
     }
     else {
         /* Sensors has gone haywire, attempt to land regardless */
-        failsafeConfig_t * failsafeConfig = getActiveFailsafeConfig();
-
-        if (failsafeConfig) {
-            rcCommand[THROTTLE] = failsafeConfig->failsafe_throttle;
+        if (feature(FEATURE_FAILSAFE)) {
+            rcCommand[THROTTLE] = failsafeConfig.failsafe_throttle;
         }
         else {
             rcCommand[THROTTLE] = posControl.escAndServoConfig->minthrottle;
