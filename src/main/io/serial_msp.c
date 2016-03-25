@@ -80,6 +80,7 @@
 #include "config/config.h"
 #include "config/config_profile.h"
 #include "config/config_master.h"
+#include "config/parameter_group_ids.h"
 #include "config/parameter_group.h"
 
 #include "version.h"
@@ -580,6 +581,49 @@ static uint32_t packFlightModeFlags(void)
     return junk;
 }
 
+
+typedef struct pgToMSPMapEntry_s {
+    pgn_t pgn;
+    uint8_t mspId;
+    uint8_t mspIdForSet;
+} pgToMSPMapEntry_t;
+
+static const pgToMSPMapEntry_t pgToMSPMap[] =
+{
+    { PG_BOARD_ALIGNMENT, MSP_BOARD_ALIGNMENT, MSP_SET_BOARD_ALIGNMENT },
+    { PG_FAILSAFE_CONFIG, MSP_FAILSAFE_CONFIG, MSP_SET_FAILSAFE_CONFIG },
+};
+
+#define PG_TO_MSP_MAP_ENTRY_COUNT (sizeof(pgToMSPMap) / sizeof(pgToMSPMapEntry_t))
+
+uint8_t pgMatcherForMSPSet(const pgRegistry_t *candidate, const void *criteria)
+{
+    uint8_t index;
+    uint8_t mspIdForSet = *(uint8_t *)criteria;
+
+    for (index = 0; index < PG_TO_MSP_MAP_ENTRY_COUNT; index++) {
+        const pgToMSPMapEntry_t *entry = &pgToMSPMap[index];
+        if (entry->pgn == candidate->pgn && entry->mspIdForSet == mspIdForSet) {
+            return true;
+        }
+    }
+    return false;
+}
+
+uint8_t pgMatcherForMSP(const pgRegistry_t *candidate, const void *criteria)
+{
+    uint8_t index;
+    uint8_t mspId = *(uint8_t *)criteria;
+
+    for (index = 0; index < PG_TO_MSP_MAP_ENTRY_COUNT; index++) {
+        const pgToMSPMapEntry_t *entry = &pgToMSPMap[index];
+        if (entry->pgn == candidate->pgn && entry->mspId == mspId) {
+            return true;
+        }
+    }
+    return false;
+}
+
 static bool processOutCommand(uint8_t cmdMSP)
 {
     uint32_t i;
@@ -588,7 +632,7 @@ static bool processOutCommand(uint8_t cmdMSP)
     int8_t msp_wp_no;
     navWaypoint_t msp_wp;
 #endif
-    const pgRegistry_t *reg = pgFind(cmdMSP);
+    const pgRegistry_t *reg = pgMatcher(pgMatcherForMSP, (void*)&cmdMSP);
 
     if (reg != NULL) {
         headSerialReply(reg->size);
@@ -1162,7 +1206,7 @@ static bool processInCommand(void)
     navWaypoint_t msp_wp;
 #endif
 
-    const pgRegistry_t *reg = pgFindForSet(currentPort->cmdMSP);
+    const pgRegistry_t *reg = pgMatcher(pgMatcherForMSPSet, (void*)&currentPort->cmdMSP);
 
     if (reg != NULL) {
         pgLoad(reg, currentPort->inBuf + currentPort->indRX, currentPort->dataSize);

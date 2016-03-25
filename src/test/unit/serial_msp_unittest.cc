@@ -66,6 +66,7 @@ extern "C" {
     #include "flight/imu.h"
     #include "flight/failsafe.h"
 
+    #include "config/parameter_group_ids.h"
     #include "config/runtime_config.h"
     #include "config/config.h"
     #include "config/config_profile.h"
@@ -83,6 +84,31 @@ extern "C" {
     extern bufWriter_t *writer;
     extern mspPort_t mspPorts[];
     profile_t *currentProfile;
+
+    failsafeConfig_t failsafeConfig;
+    boardAlignment_t boardAlignment;
+
+    const pgRegistry_t __pg_registry[] =
+    {
+        {
+            .base = &boardAlignment,
+            .size = sizeof(boardAlignment),
+            .pgn = PG_BOARD_ALIGNMENT,
+            .format = 0
+        },
+        {
+            .base = &failsafeConfig,
+            .size = sizeof(failsafeConfig),
+            .pgn = PG_FAILSAFE_CONFIG,
+            .format = 0
+        },
+        {
+            .base = nullptr,
+            .size = 0,
+            .pgn = 0,
+            .format = 0
+        },
+    };
 }
 
 profile_t profile;

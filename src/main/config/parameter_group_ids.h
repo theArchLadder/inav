@@ -15,36 +15,5 @@
  * along with Cleanflight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stddef.h>
-#include <string.h>
-#include <stdint.h>
-
-#include "parameter_group.h"
-#include "common/maths.h"
-
-const pgRegistry_t* pgFind(pgn_t pgn)
-{
-    PG_FOREACH(reg) {
-        if (reg->pgn == pgn) {
-            return reg;
-        }
-    }
-    return NULL;
-}
-
-const pgRegistry_t* pgMatcher(pgMatcherFuncPtr func, const void *criteria)
-{
-    PG_FOREACH(reg) {
-        if (func(reg, criteria)) {
-            return reg;
-        }
-    }
-    return NULL;
-}
-
-void pgLoad(const pgRegistry_t* reg, const void *from, int size)
-{
-    memset(reg->base, 0, reg->size);
-    int take = MIN(size, reg->size);
-    memcpy(reg->base, from, take);
-}
+#define PG_FAILSAFE_CONFIG 1
+#define PG_BOARD_ALIGNMENT 2
