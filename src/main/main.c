@@ -29,6 +29,8 @@
 #include "common/atomic.h"
 #include "common/maths.h"
 
+#include "config/parameter_group.h"
+
 #include "drivers/nvic.h"
 
 #include "drivers/sensor.h"

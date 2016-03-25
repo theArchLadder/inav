@@ -27,13 +27,14 @@
 #include "common/maths.h"
 #include "common/filter.h"
 
+#include "config/parameter_group.h"
+
 #include "drivers/system.h"
 #include "drivers/sensor.h"
 #include "drivers/accgyro.h"
 
 #include "sensors/sensors.h"
 #include "sensors/acceleration.h"
-#include "sensors/boardalignment.h"
 
 #include "io/escservo.h"
 #include "io/rc_controls.h"

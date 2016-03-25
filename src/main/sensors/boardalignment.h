@@ -17,8 +17,6 @@
 
 #pragma once
 
-#include "config/parameter_group.h"
-
 typedef struct boardAlignment_s {
     int16_t rollDeciDegrees;
     int16_t pitchDeciDegrees;

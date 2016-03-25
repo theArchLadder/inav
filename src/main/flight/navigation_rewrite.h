@@ -25,8 +25,8 @@
 #include "io/gps.h"
 
 #include "flight/pid.h"
-#include "flight/failsafe.h"
 #include "flight/mixer.h"
+#include "flight/failsafe.h"
 
 /* GPS Home location data */
 extern gpsLocation_t        GPS_home;
