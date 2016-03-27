@@ -25,8 +25,11 @@
 
 #define GYRO_SATURATION_LIMIT   1800        // 1800dps
 #define PID_MAX_OUTPUT          1000
-#define YAW_P_LIMIT_MIN 100                 // Maximum value for yaw P limiter
-#define YAW_P_LIMIT_MAX 300                 // Maximum value for yaw P limiter
+#define YAW_P_LIMIT_MIN         100                 // Maximum value for yaw P limiter
+#define YAW_P_LIMIT_MAX         300                 // Maximum value for yaw P limiter
+
+#define PID_MIN                 0
+#define PID_MAX                 255
 
 typedef enum {
     PIDROLL,
