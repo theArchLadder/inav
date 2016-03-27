@@ -32,11 +32,11 @@ const pgRegistry_t* pgFind(pgn_t pgn)
     return NULL;
 }
 
-const pgRegistry_t* pgMatcher(pgMatcherFuncPtr func, const void *criteria)
+const pgRegistry_t* pgMatcher(pgMatcherFuncPtr matcher, const void *criteria)
 {
-    PG_FOREACH(reg) {
-        if (func(reg, criteria)) {
-            return reg;
+    PG_FOREACH(candidate) {
+        if (matcher(candidate, criteria)) {
+            return candidate;
         }
     }
     return NULL;
@@ -47,4 +47,25 @@ void pgLoad(const pgRegistry_t* reg, const void *from, int size)
     memset(reg->base, 0, reg->size);
     int take = MIN(size, reg->size);
     memcpy(reg->base, from, take);
+}
+
+void pgResetAll(uint8_t profileCount)
+{
+    // Clear all configuration
+    PG_FOREACH(reg) {
+        // FIXME this assumes that all defaults should be 0, but this is not the case.
+
+        if ((reg->flags & PGRF_CLASSIFICATON_BIT) == PGC_SYSTEM) {
+            memset(reg->base, 0, reg->size);
+        } else {
+
+            // reset one instance for each profile
+            for (uint8_t profileIndex = 0; profileIndex < profileCount; profileIndex++) {
+
+                uint8_t *base = reg->base + (reg->size * profileIndex);
+
+                memset(base, 0, reg->size);
+            }
+        }
+    }
 }

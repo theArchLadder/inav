@@ -24,12 +24,12 @@
 
 #include "build_config.h"
 
+#include "config/parameter_group.h"
+
 #include "common/color.h"
 #include "common/axis.h"
 #include "common/maths.h"
 #include "common/filter.h"
-
-#include "config/parameter_group.h"
 
 #include "drivers/sensor.h"
 #include "drivers/accgyro.h"
@@ -71,6 +71,7 @@
 
 #include "config/runtime_config.h"
 #include "config/config.h"
+#include "config/config_eeprom.h"
 #include "config/parameter_group.h"
 #include "config/config_streamer.h"
 
@@ -82,35 +83,6 @@
 
 void useRcControlsConfig(modeActivationCondition_t *modeActivationConditions, escAndServoConfig_t *escAndServoConfigToUse, pidProfile_t *pidProfileToUse);
 
-// Header for the saved copy.
-typedef struct {
-    uint8_t format;
-} PG_PACKED configHeader_t;
-
-// Header for each stored PG.
-typedef struct {
-    // TODO(michaelh): shrink to uint8_t once masterConfig has been
-    // split up.
-    uint16_t size;
-    uint8_t pgn;
-    uint8_t format;
-    uint8_t pg[];
-} PG_PACKED configRecord_t;
-
-// Footer for the saved copy.
-typedef struct {
-    uint16_t terminator;
-    uint8_t chk;
-} PG_PACKED configFooter_t;
-
-// Used to check the compiler packing at build time.
-typedef struct {
-    uint8_t byte;
-    uint32_t word;
-} PG_PACKED packingTest_t;
-
-#define FLASH_TO_RESERVE_FOR_CONFIG 0x800
-
 master_t masterConfig;                 // master config struct with data independent from profiles
 profile_t *currentProfile;
 static uint32_t activeFeaturesLatch = 0;
@@ -118,16 +90,14 @@ static uint32_t activeFeaturesLatch = 0;
 static uint8_t currentControlRateProfileIndex = 0;
 controlRateConfig_t *currentControlRateProfile;
 
-static const uint8_t EEPROM_CONF_VERSION = 200;
-
-extern uint8_t __config_start;
-
 static const void *pg_registry_tail PG_REGISTRY_TAIL_SECTION;
 
 static const pgRegistry_t masterRegistry PG_REGISTRY_SECTION = {
-    .base = &masterConfig,
+    .base = (uint8_t *)&masterConfig,
     .size = sizeof(masterConfig),
     .pgn = 0,
+    .flags = PGC_SYSTEM
+
 };
 
 static void resetAccelerometerTrims(flightDynamicsTrims_t * accZero, flightDynamicsTrims_t * accGain)
@@ -372,6 +342,7 @@ uint8_t getCurrentProfile(void)
 static void setProfile(uint8_t profileIndex)
 {
     currentProfile = &masterConfig.profile[profileIndex];
+    activateProfile(profileIndex);
 }
 
 uint8_t getCurrentControlRateProfile(void)
@@ -395,14 +366,11 @@ uint16_t getCurrentMinthrottle(void)
 }
 
 // Default settings
-static void resetConf(void)
+STATIC_UNIT_TESTED void resetConf(void)
 {
     int i;
 
-    // Clear all configuration
-    PG_FOREACH(reg) {
-        memset(reg->base, 0, reg->size);
-    }
+    pgResetAll(MAX_PROFILE_COUNT);
 
     setProfile(0);
     setControlRateProfile(0);
@@ -545,7 +513,7 @@ static void resetConf(void)
     }
 
     // gimbal
-    currentProfile->gimbalConfig.mode = GIMBAL_MODE_NORMAL;
+    gimbalConfig->mode = GIMBAL_MODE_NORMAL;
 #endif
 
     // custom mixer. clear by defaults.
@@ -677,93 +645,6 @@ static void resetConf(void)
     }
 }
 
-static uint8_t updateChecksum(uint8_t chk, const void *data, uint32_t length)
-{
-    const uint8_t *p = (const uint8_t *)data;
-    const uint8_t *pend = p + length;
-
-    for (; p != pend; p++) {
-        chk ^= *p;
-    }
-    return chk;
-}
-
-// Find a parameter group by PGN.  Returns NULL on not found.
-static const pgRegistry_t *findPGN(const configRecord_t *record)
-{
-    // To save memory, the array is terminated by a single zero
-    // instead of a full pgRegistry_t.  This means that 'base' must be
-    // the first entry in the struct.
-    BUILD_BUG_ON(offsetof(pgRegistry_t, base) != 0);
-
-    PG_FOREACH(reg) {
-        if (reg->pgn == record->pgn && reg->format == record->format) {
-            return reg;
-        }
-    }
-    return NULL;
-}
-
-// Load a PG into RAM, upgrading and downgrading as needed.
-static bool loadPG(const configRecord_t *record)
-{
-    const pgRegistry_t *reg = findPGN(record);
-
-    if (reg == NULL) {
-        return false;
-    }
-
-    // Clear the in-memory copy.  Sets any ungraded fields to zero.
-    memset(reg->base, 0, reg->size);
-    memcpy(reg->base, record->pg, MIN(reg->size, record->size - sizeof(*record)));
-    return true;
-}
-
-// Scan the EEPROM config.  Optionally also load into memory.  Returns
-// true if the config is valid.
-static bool scanEEPROM(bool andLoad)
-{
-    uint8_t chk = 0;
-    const uint8_t *p = &__config_start;
-    const configHeader_t *header = (const configHeader_t *)p;
-
-    if (header->format != EEPROM_CONF_VERSION) {
-        return false;
-    }
-    chk = updateChecksum(chk, header, sizeof(*header));
-    p += sizeof(*header);
-
-    for (;;) {
-        const configRecord_t *record = (const configRecord_t *)p;
-
-        if (record->size == 0) {
-            // Found the end.  Stop scanning.
-            break;
-        }
-        if (record->size >= FLASH_TO_RESERVE_FOR_CONFIG
-            || record->size < sizeof(*record)) {
-            // Too big or too small.
-            return false;
-        }
-
-        chk = updateChecksum(chk, p, record->size);
-
-        if (andLoad) {
-            loadPG(record);
-        }
-        p += record->size;
-    }
-
-    const configFooter_t *footer = (const configFooter_t *)p;
-    chk = updateChecksum(chk, footer, sizeof(*footer));
-    return chk == 0xFF;
-}
-
-static bool isEEPROMContentValid(void)
-{
-    return scanEEPROM(false);
-}
-
 void activateControlRateConfig(void)
 {
     generatePitchRollCurve(currentControlRateProfile);
@@ -800,7 +681,6 @@ void activateConfig(void)
     mixerUseConfigs(
 #ifdef USE_SERVOS
         currentProfile->servoConf,
-        &currentProfile->gimbalConfig,
 #endif
         &masterConfig.flight3DConfig,
         &masterConfig.escAndServoConfig,
@@ -956,24 +836,16 @@ void applyAndSaveBoardAlignmentDelta(int16_t roll, int16_t pitch)
     saveConfigAndNotify();
 }
 
-void initEEPROM(void)
-{
-    // Verify that this architecture packs as expected.
-    BUILD_BUG_ON(offsetof(packingTest_t, byte) != 0);
-    BUILD_BUG_ON(offsetof(packingTest_t, word) != 1);
-    BUILD_BUG_ON(sizeof(packingTest_t) != 5);
-
-    BUILD_BUG_ON(sizeof(configHeader_t) != 1);
-    BUILD_BUG_ON(sizeof(configFooter_t) != 3);
-    BUILD_BUG_ON(sizeof(configRecord_t) != 4);
-}
-
 void readEEPROM(void)
 {
+    suspendRxSignal();
+
+    // Sanity check
     // Read flash
     if (!scanEEPROM(true)) {
-        failureMode(10);
+        failureMode(FAILURE_INVALID_EEPROM_CONTENTS);
     }
+
 
     if (masterConfig.current_profile_index > MAX_PROFILE_COUNT - 1) // sanity check
         masterConfig.current_profile_index = 0;
@@ -1000,47 +872,9 @@ void readEEPROMAndNotify(void)
 
 void writeEEPROM(void)
 {
-    // Generate compile time error if the config does not fit in the reserved area of flash.
-    BUILD_BUG_ON(sizeof(master_t) > FLASH_TO_RESERVE_FOR_CONFIG);
+    suspendRxSignal();
 
-    config_streamer_t streamer;
-    config_streamer_init(&streamer);
-
-    // write it
-    for (int attempt = 0; attempt < 3; attempt++) {
-        config_streamer_start(&streamer, (uintptr_t)&__config_start);
-
-        configHeader_t header = {
-            .format = EEPROM_CONF_VERSION,
-        };
-
-        config_streamer_write(&streamer, &header, sizeof(header));
-
-        PG_FOREACH(reg) {
-            configRecord_t record = {
-                .size = sizeof(configRecord_t) + reg->size,
-                .pgn = reg->pgn,
-                .format = reg->format,
-            };
-
-            config_streamer_write(&streamer, &record, sizeof(record));
-            config_streamer_write(&streamer, reg->base, reg->size);
-        }
-
-        configFooter_t footer = {
-            .terminator = 0,
-            .chk = ~config_streamer_chk(&streamer),
-        };
-
-        if (config_streamer_write(&streamer, &footer, sizeof(footer)) == 0) {
-            break;
-        }
-    }
-
-    // Flash write failed - just die now
-    if (config_streamer_finish(&streamer) != 0 || !isEEPROMContentValid()) {
-        failureMode(10);
-    }
+    writeConfigToEEPROM();
 
     resumeRxSignal();
 }
@@ -1071,7 +905,6 @@ void changeProfile(uint8_t profileIndex)
     masterConfig.current_profile_index = profileIndex;
     writeEEPROM();
     readEEPROM();
-    beeperConfirmationBeeps(profileIndex + 1);
 }
 
 void changeControlRateProfile(uint8_t profileIndex)

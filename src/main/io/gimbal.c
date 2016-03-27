@@ -15,6 +15,32 @@
  * along with Cleanflight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define PG_FAILSAFE_CONFIG 1
-#define PG_BOARD_ALIGNMENT 2
-#define PG_GIMBAL_CONFIG 3
+#include <stdbool.h>
+#include <stdint.h>
+
+#include <platform.h>
+
+#include "debug.h"
+
+#include "config/parameter_group.h"
+#include "config/parameter_group_ids.h"
+
+#include "config/config.h"
+
+#include "io/gimbal.h"
+
+#ifdef USE_SERVOS
+
+gimbalConfig_t gimbalConfigStorage[MAX_PROFILE_COUNT];
+gimbalConfig_t *gimbalConfig;
+
+static const pgRegistry_t gimbalConfigRegistry PG_REGISTRY_SECTION =
+{
+    .base = (uint8_t *)&gimbalConfigStorage,
+    .ptr = (uint8_t **)&gimbalConfig,
+    .size = sizeof(gimbalConfigStorage[0]),
+    .pgn = PG_GIMBAL_CONFIG,
+    .format = 0,
+    .flags = PGC_PROFILE
+};
+#endif

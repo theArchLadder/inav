@@ -15,6 +15,9 @@
  * along with Cleanflight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define PG_FAILSAFE_CONFIG 1
-#define PG_BOARD_ALIGNMENT 2
-#define PG_GIMBAL_CONFIG 3
+#pragma once
+
+bool isEEPROMContentValid(void);
+bool scanEEPROM(bool andLoad);
+void writeConfigToEEPROM(void);
+void activateProfile(uint8_t profileIndexToActivate);

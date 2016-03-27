@@ -219,6 +219,7 @@ COMMON_SRC = build_config.c \
 		   config/config.c \
 		   config/runtime_config.c \
 		   config/config_streamer.c \
+		   config/config_eeprom.c \
            config/parameter_group.c \
 		   common/maths.c \
 		   common/printf.c \
@@ -242,6 +243,7 @@ COMMON_SRC = build_config.c \
 		   drivers/gyro_sync.c \
 		   drivers/buf_writer.c \
 		   io/beeper.c \
+		   io/gimbal.c \
 		   io/rc_controls.c \
 		   io/rc_curves.c \
 		   io/serial.c \
