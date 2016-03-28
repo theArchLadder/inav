@@ -649,16 +649,16 @@ const clivalue_t valueTable[] = {
     { "multiwii_current_meter_output", VAR_UINT8  | MASTER_VALUE | MODE_LOOKUP,  &masterConfig.batteryConfig.multiwiiCurrentMeterOutput, .config.lookup = { TABLE_OFF_ON }, 0 },
     { "current_meter_type",         VAR_UINT8  | MASTER_VALUE | MODE_LOOKUP,  &masterConfig.batteryConfig.currentMeterType, .config.lookup = { TABLE_CURRENT_SENSOR }, 0 },
 
-    { "align_gyro",                 VAR_UINT8  | MASTER_VALUE | MODE_LOOKUP,  &masterConfig.sensorAlignmentConfig.gyro_align, .config.lookup = { TABLE_ALIGNMENT }, 0 },
-    { "align_acc",                  VAR_UINT8  | MASTER_VALUE | MODE_LOOKUP,  &masterConfig.sensorAlignmentConfig.acc_align, .config.lookup = { TABLE_ALIGNMENT }, 0 },
-    { "align_mag",                  VAR_UINT8  | MASTER_VALUE | MODE_LOOKUP,  &masterConfig.sensorAlignmentConfig.mag_align, .config.lookup = { TABLE_ALIGNMENT }, 0 },
+    { "align_gyro",                 VAR_UINT8  | MIGRATED_MASTER_VALUE | MODE_LOOKUP, 0,  .config.lookup = { TABLE_ALIGNMENT } , PG_SENSOR_ALIGNMENT_CONFIG, offsetof(sensorAlignmentConfig_t, gyro_align)},
+    { "align_acc",                  VAR_UINT8  | MIGRATED_MASTER_VALUE | MODE_LOOKUP, 0,  .config.lookup = { TABLE_ALIGNMENT } , PG_SENSOR_ALIGNMENT_CONFIG, offsetof(sensorAlignmentConfig_t, acc_align)},
+    { "align_mag",                  VAR_UINT8  | MIGRATED_MASTER_VALUE | MODE_LOOKUP, 0,  .config.lookup = { TABLE_ALIGNMENT } , PG_SENSOR_ALIGNMENT_CONFIG, offsetof(sensorAlignmentConfig_t, mag_align)},
 
     { "align_board_roll",           VAR_INT16  | MIGRATED_MASTER_VALUE, 0,  .config.minmax = { -1800,  3600 } , PG_BOARD_ALIGNMENT, offsetof(boardAlignment_t, rollDeciDegrees)},
     { "align_board_pitch",          VAR_INT16  | MIGRATED_MASTER_VALUE, 0,  .config.minmax = { -1800,  3600 } , PG_BOARD_ALIGNMENT, offsetof(boardAlignment_t, pitchDeciDegrees)},
     { "align_board_yaw",            VAR_INT16  | MIGRATED_MASTER_VALUE, 0,  .config.minmax = { -1800,  3600 } , PG_BOARD_ALIGNMENT, offsetof(boardAlignment_t, yawDeciDegrees)},
 
-    { "gyro_lpf",                   VAR_UINT8  | MASTER_VALUE | MODE_LOOKUP,  &masterConfig.gyro_lpf, .config.lookup = { TABLE_GYRO_LPF } },
-    { "moron_threshold",            VAR_UINT8  | MASTER_VALUE,  &masterConfig.gyroConfig.gyroMovementCalibrationThreshold, .config.minmax = { 0,  128 }, 0 },
+    { "gyro_lpf",                   VAR_UINT8  | MIGRATED_MASTER_VALUE | MODE_LOOKUP, 0,  .config.lookup = { TABLE_GYRO_LPF } , PG_GYRO_CONFIG, offsetof(gyroConfig_t, gyro_lpf)},
+    { "moron_threshold",            VAR_UINT8  | MIGRATED_MASTER_VALUE, 0,  .config.minmax = { 0,  128 } , PG_GYRO_CONFIG, offsetof(gyroConfig_t, gyroMovementCalibrationThreshold)},
 
     { "imu_dcm_kp",                 VAR_UINT16 | MASTER_VALUE,  &masterConfig.dcm_kp_acc, .config.minmax = { 0,  65535 }, 0 },
     { "imu_dcm_ki",                 VAR_UINT16 | MASTER_VALUE,  &masterConfig.dcm_ki_acc, .config.minmax = { 0,  65535 }, 0 },
@@ -710,13 +710,17 @@ const clivalue_t valueTable[] = {
     { "gimbal_mode",                VAR_UINT8  | PROFILE_VALUE | MODE_LOOKUP, 0, .config.lookup = { TABLE_GIMBAL_MODE }, PG_GIMBAL_CONFIG, offsetof(gimbalConfig_t, mode), 0},
 #endif
 
-    { "acc_hardware",               VAR_UINT8  | MASTER_VALUE,  &masterConfig.acc_hardware, .config.minmax = { 0,  ACC_MAX }, 0 },
+    { "acc_hardware",               VAR_UINT8  | MIGRATED_MASTER_VALUE, 0,  .config.minmax = { 0,  ACC_MAX } , PG_SENSOR_SELECTION_CONFIG, offsetof(sensorSelectionConfig_t, acc_hardware)},
 
-    { "baro_use_median_filter",     VAR_UINT8  | MASTER_VALUE | MODE_LOOKUP, &masterConfig.barometerConfig.use_median_filtering, .config.lookup = { TABLE_OFF_ON }, 0 },
-    { "baro_hardware",              VAR_UINT8  | MASTER_VALUE,  &masterConfig.baro_hardware, .config.minmax = { 0,  BARO_MAX }, 0 },
+#ifdef BARO
+    { "baro_use_median_filter",     VAR_UINT8  | MIGRATED_MASTER_VALUE | MODE_LOOKUP, 0,  .config.lookup = { TABLE_OFF_ON } , PG_BARO_CONFIG, offsetof(barometerConfig_t, use_median_filtering)},
+    { "baro_hardware",              VAR_UINT8  | MIGRATED_MASTER_VALUE, 0,  .config.minmax = { 0,  BARO_MAX } , PG_SENSOR_SELECTION_CONFIG, offsetof(sensorSelectionConfig_t, baro_hardware)},
+#endif
 
-    { "mag_hardware",               VAR_UINT8  | MASTER_VALUE,  &masterConfig.mag_hardware, .config.minmax = { 0,  MAG_MAX }, 0 },
+#ifdef MAG
+    { "mag_hardware",               VAR_UINT8  | MIGRATED_MASTER_VALUE, 0,  .config.minmax = { 0,  MAG_MAX } , PG_SENSOR_SELECTION_CONFIG, offsetof(sensorSelectionConfig_t, mag_hardware)},
     { "mag_declination",            VAR_INT16  | PROFILE_VALUE, 0,  .config.minmax = { -18000,  18000 } , PG_PROFILE, offsetof(profile_t, mag_declination)},
+#endif
 
     { "p_pitch",                    VAR_UINT8  | PROFILE_VALUE, 0,  .config.minmax = { PID_MIN,  PID_MAX } , PG_PROFILE, offsetof(profile_t, pidProfile.P8[FD_PITCH])},
     { "i_pitch",                    VAR_UINT8  | PROFILE_VALUE, 0,  .config.minmax = { PID_MIN,  PID_MAX } , PG_PROFILE, offsetof(profile_t, pidProfile.I8[FD_PITCH])},
@@ -735,8 +739,9 @@ const clivalue_t valueTable[] = {
     { "max_angle_inclination_rll",  VAR_INT16  | PROFILE_VALUE, 0,  .config.minmax = {100, 900 } , PG_PROFILE, offsetof(profile_t, pidProfile.max_angle_inclination[FD_ROLL])},
     { "max_angle_inclination_pit",  VAR_INT16  | PROFILE_VALUE, 0,  .config.minmax = {100, 900 } , PG_PROFILE, offsetof(profile_t, pidProfile.max_angle_inclination[FD_PITCH])},
     
-    { "gyro_soft_lpf_hz",           VAR_UINT8  | PROFILE_VALUE, 0,  .config.minmax = {0, 200 } , PG_PROFILE, offsetof(profile_t, pidProfile.gyro_soft_lpf_hz)},
-    { "acc_soft_lpf_hz",            VAR_UINT8  | PROFILE_VALUE, 0,  .config.minmax = {0, 200 } , PG_PROFILE, offsetof(profile_t, pidProfile.acc_soft_lpf_hz)},
+    { "gyro_soft_lpf_hz",           VAR_UINT8  | MIGRATED_MASTER_VALUE, 0,  .config.minmax = {0, 200 } , PG_GYRO_CONFIG, offsetof(gyroConfig_t, gyro_soft_lpf_hz)},
+    { "acc_soft_lpf_hz",            VAR_UINT8  | MIGRATED_MASTER_VALUE, 0,  .config.minmax = {0, 200 } , PG_ACC_CONFIG, offsetof(accConfig_t, acc_soft_lpf_hz)},
+
     { "dterm_lpf_hz",               VAR_UINT8  | PROFILE_VALUE, 0,  .config.minmax = {0, 200 } , PG_PROFILE, offsetof(profile_t, pidProfile.dterm_lpf_hz)},
 
 #ifdef BLACKBOX
@@ -745,17 +750,17 @@ const clivalue_t valueTable[] = {
     { "blackbox_device",            VAR_UINT8  | MIGRATED_MASTER_VALUE | MODE_LOOKUP, 0,  .config.lookup = { TABLE_BLACKBOX_DEVICE } , PG_BLACKBOX_CONFIG, offsetof(blackboxConfig_t, device)},
 #endif
 
-    { "magzero_x",                  VAR_INT16  | MASTER_VALUE, &masterConfig.magZero.raw[X], .config.minmax = { -32768,  32767 }, FLAG_MAG_CALIBRATION_DONE },
-    { "magzero_y",                  VAR_INT16  | MASTER_VALUE, &masterConfig.magZero.raw[Y], .config.minmax = { -32768,  32767 }, FLAG_MAG_CALIBRATION_DONE },
-    { "magzero_z",                  VAR_INT16  | MASTER_VALUE, &masterConfig.magZero.raw[Z], .config.minmax = { -32768,  32767 }, FLAG_MAG_CALIBRATION_DONE },
+    { "magzero_x",                  VAR_INT16  | MIGRATED_MASTER_VALUE, 0,  .config.minmax = { -32768,  32767 } , PG_MAG_CONFIG, offsetof(magConfig_t, magZero.raw[X]), FLAG_MAG_CALIBRATION_DONE },
+    { "magzero_y",                  VAR_INT16  | MIGRATED_MASTER_VALUE, 0,  .config.minmax = { -32768,  32767 } , PG_MAG_CONFIG, offsetof(magConfig_t, magZero.raw[Y]), FLAG_MAG_CALIBRATION_DONE },
+    { "magzero_z",                  VAR_INT16  | MIGRATED_MASTER_VALUE, 0,  .config.minmax = { -32768,  32767 } , PG_MAG_CONFIG, offsetof(magConfig_t, magZero.raw[Z]), FLAG_MAG_CALIBRATION_DONE },
 
-    { "acczero_x",                  VAR_INT16  | MASTER_VALUE, &masterConfig.accZero.raw[X], .config.minmax = { -32768,  32767 }, 0 },
-    { "acczero_y",                  VAR_INT16  | MASTER_VALUE, &masterConfig.accZero.raw[Y], .config.minmax = { -32768,  32767 }, 0 },
-    { "acczero_z",                  VAR_INT16  | MASTER_VALUE, &masterConfig.accZero.raw[Z], .config.minmax = { -32768,  32767 }, 0 },
+    { "acczero_x",                  VAR_INT16  | MIGRATED_MASTER_VALUE, 0,  .config.minmax = { -32768,  32767 } , PG_ACC_CONFIG, offsetof(accConfig_t, accZero.raw[X])},
+    { "acczero_y",                  VAR_INT16  | MIGRATED_MASTER_VALUE, 0,  .config.minmax = { -32768,  32767 } , PG_ACC_CONFIG, offsetof(accConfig_t, accZero.raw[Y])},
+    { "acczero_z",                  VAR_INT16  | MIGRATED_MASTER_VALUE, 0,  .config.minmax = { -32768,  32767 } , PG_ACC_CONFIG, offsetof(accConfig_t, accZero.raw[Z])},
 
-    { "accgain_x",                  VAR_INT16  | MASTER_VALUE, &masterConfig.accGain.raw[X], .config.minmax = { 1,  8192 }, 0 },
-    { "accgain_y",                  VAR_INT16  | MASTER_VALUE, &masterConfig.accGain.raw[Y], .config.minmax = { 1,  8192 }, 0 },
-    { "accgain_z",                  VAR_INT16  | MASTER_VALUE, &masterConfig.accGain.raw[Z], .config.minmax = { 1,  8192 }, 0 },
+    { "accgain_x",                  VAR_INT16  | MIGRATED_MASTER_VALUE, 0,  .config.minmax = { -32768,  32767 } , PG_ACC_CONFIG, offsetof(accConfig_t, accGain.raw[X])},
+    { "accgain_y",                  VAR_INT16  | MIGRATED_MASTER_VALUE, 0,  .config.minmax = { -32768,  32767 } , PG_ACC_CONFIG, offsetof(accConfig_t, accGain.raw[Y])},
+    { "accgain_z",                  VAR_INT16  | MIGRATED_MASTER_VALUE, 0,  .config.minmax = { -32768,  32767 } , PG_ACC_CONFIG, offsetof(accConfig_t, accGain.raw[Z])},
 };
 
 #define VALUE_COUNT (sizeof(valueTable) / sizeof(clivalue_t))

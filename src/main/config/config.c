@@ -120,15 +120,24 @@ static const pgRegistry_t profileRegistry PG_REGISTRY_SECTION =
     .flags = PGC_PROFILE
 };
 
-static void resetAccelerometerTrims(flightDynamicsTrims_t * accZero, flightDynamicsTrims_t * accGain)
+static void resetAccelerometerConfig(void)
 {
-    accZero->values.pitch = 0;
-    accZero->values.roll = 0;
-    accZero->values.yaw = 0;
+    accConfig.accZero.values.pitch = 0;
+    accConfig.accZero.values.roll = 0;
+    accConfig.accZero.values.yaw = 0;
 
-    accGain->values.pitch = 4096;
-    accGain->values.roll = 4096;
-    accGain->values.yaw = 4096;
+    accConfig.accGain.values.pitch = 4096;
+    accConfig.accGain.values.roll = 4096;
+    accConfig.accGain.values.yaw = 4096;
+
+    accConfig.acc_soft_lpf_hz = 15;
+}
+
+static void resetGyroConfig(void)
+{
+    gyroConfig.gyro_lpf = 2;                  // BITS_DLPF_CFG_98HZ, In case of ST gyro, will default to 54Hz instead
+    gyroConfig.gyro_soft_lpf_hz = 60;
+    gyroConfig.gyroMovementCalibrationThreshold = 32;
 }
 
 void resetPidProfile(pidProfile_t *pidProfile)
@@ -162,8 +171,6 @@ void resetPidProfile(pidProfile_t *pidProfile)
     pidProfile->I8[PIDVEL] = 50;    // NAV_VEL_Z_I * 100
     pidProfile->D8[PIDVEL] = 10;    // NAV_VEL_Z_D * 100
 
-    pidProfile->acc_soft_lpf_hz = 15;
-    pidProfile->gyro_soft_lpf_hz = 60;
     pidProfile->dterm_lpf_hz = 30;
 
     pidProfile->yaw_p_limit = YAW_P_LIMIT_MAX;
@@ -410,23 +417,24 @@ STATIC_UNIT_TESTED void resetConf(void)
     featureSet(FEATURE_FAILSAFE);
 
     // global settings
-    masterConfig.current_profile_index = 0;     // default profile
     masterConfig.dcm_kp_acc = 2500;             // 0.25 * 10000
     masterConfig.dcm_ki_acc = 50;               // 0.005 * 10000
     masterConfig.dcm_kp_mag = 10000;            // 1.00 * 10000
     masterConfig.dcm_ki_mag = 0;                // 0.00 * 10000
-    masterConfig.gyro_lpf = 2;                  // BITS_DLPF_CFG_98HZ, In case of ST gyro, will default to 54Hz instead
 
-    resetAccelerometerTrims(&masterConfig.accZero, &masterConfig.accGain);
+    resetGyroConfig();
 
-    resetSensorAlignment(&masterConfig.sensorAlignmentConfig);
+    resetAccelerometerConfig();
 
+    resetSensorAlignment(&sensorAlignmentConfig);
+
+    /*
     masterConfig.acc_hardware = ACC_DEFAULT;     // default/autodetect
-    masterConfig.yaw_control_direction = 1;
-    masterConfig.gyroConfig.gyroMovementCalibrationThreshold = 32;
-
     masterConfig.mag_hardware = MAG_DEFAULT;     // default/autodetect
     masterConfig.baro_hardware = BARO_DEFAULT;   // default/autodetect
+    */
+
+    masterConfig.yaw_control_direction = 1;
 
     resetBatteryConfig(&masterConfig.batteryConfig);
 
@@ -502,7 +510,7 @@ STATIC_UNIT_TESTED void resetConf(void)
 
     currentProfile->mag_declination = 0;
 
-    resetBarometerConfig(&masterConfig.barometerConfig);
+    resetBarometerConfig(&barometerConfig);
 
     // Radio
     parseRcChannels("AETR1234", &masterConfig.rxConfig);
@@ -690,17 +698,11 @@ void activateConfig(void)
         &currentProfile->pidProfile
     );
 
-    useGyroConfig(&masterConfig.gyroConfig, currentProfile->pidProfile.gyro_soft_lpf_hz);
-
 #ifdef TELEMETRY
     telemetryUseConfig(&masterConfig.telemetryConfig);
 #endif
 
     useFailsafeConfig();
-
-    setAccelerationZero(&masterConfig.accZero);
-    setAccelerationGain(&masterConfig.accGain);
-    setAccelerationFilter(currentProfile->pidProfile.acc_soft_lpf_hz);
 
     mixerUseConfigs(
 #ifdef USE_SERVOS
@@ -725,10 +727,6 @@ void activateConfig(void)
     navigationUseRcControlsConfig(&currentProfile->rcControlsConfig);
     navigationUseRxConfig(&masterConfig.rxConfig);
     navigationUseFlight3DConfig(&masterConfig.flight3DConfig);
-#endif
-
-#ifdef BARO
-    useBarometerConfig(&masterConfig.barometerConfig);
 #endif
 }
 

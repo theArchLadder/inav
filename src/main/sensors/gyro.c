@@ -26,6 +26,7 @@
 #include "common/filter.h"
 
 #include "config/parameter_group.h"
+#include "config/parameter_group_ids.h"
 
 #include "drivers/sensor.h"
 #include "drivers/accgyro.h"
@@ -44,20 +45,21 @@ int16_t gyroADCRaw[XYZ_AXIS_COUNT];
 int32_t gyroADC[XYZ_AXIS_COUNT];
 int32_t gyroZero[FLIGHT_DYNAMICS_INDEX_COUNT] = { 0, 0, 0 };
 
-static gyroConfig_t *gyroConfig;
-
-static int8_t gyroLpfCutHz = 0;
 static biquad_t gyroFilterState[XYZ_AXIS_COUNT];
 static bool gyroFilterInitialised = false;
 
 gyro_t gyro;                      // gyro access functions
+gyroConfig_t gyroConfig;
 sensor_align_e gyroAlign = 0;
 
-void useGyroConfig(gyroConfig_t *gyroConfigToUse, int8_t initialGyroLpfCutHz)
+static const pgRegistry_t gyroConfigRegistry PG_REGISTRY_SECTION =
 {
-    gyroConfig = gyroConfigToUse;
-    gyroLpfCutHz = initialGyroLpfCutHz;
-}
+    .base = (uint8_t *)&gyroConfig,
+    .size = sizeof(gyroConfig),
+    .pgn = PG_GYRO_CONFIG,
+    .format = 0,
+    .flags = PGC_SYSTEM
+};
 
 void gyroSetCalibrationCycles(uint16_t calibrationCyclesRequired)
 {
@@ -139,11 +141,11 @@ void gyroUpdate(void)
     // Prepare a copy of int32_t gyroADC for mangling to prevent overflow
     for (axis = 0; axis < XYZ_AXIS_COUNT; axis++) gyroADC[axis] = gyroADCRaw[axis];
 
-    if (gyroLpfCutHz) {
+    if (gyroConfig.gyro_soft_lpf_hz) {
         if (!gyroFilterInitialised) {
             if (targetLooptime) {  /* Initialisation needs to happen once sample rate is known */
                 for (axis = 0; axis < 3; axis++) {
-                    filterInitBiQuad(gyroLpfCutHz, &gyroFilterState[axis], 0);
+                    filterInitBiQuad(gyroConfig.gyro_soft_lpf_hz, &gyroFilterState[axis], 0);
                 }
 
                 gyroFilterInitialised = true;
@@ -160,7 +162,7 @@ void gyroUpdate(void)
     alignSensors(gyroADC, gyroADC, gyroAlign);
 
     if (!isGyroCalibrationComplete()) {
-        performAcclerationCalibration(gyroConfig->gyroMovementCalibrationThreshold);
+        performAcclerationCalibration(gyroConfig.gyroMovementCalibrationThreshold);
     }
 
     applyGyroZero();

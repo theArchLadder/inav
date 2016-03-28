@@ -35,30 +35,27 @@ typedef struct master_t {
 
     flight3DConfig_t flight3DConfig;
 
-    // global sensor-related stuff
-
-    sensorAlignmentConfig_t sensorAlignmentConfig;
 
     int8_t yaw_control_direction;           // change control direction of yaw (inverted, normal)
-    uint8_t acc_hardware;                   // Which acc hardware to use on boards with more than one device
 
     uint16_t dcm_kp_acc;                    // DCM filter proportional gain ( x 10000) for accelerometer
     uint16_t dcm_ki_acc;                    // DCM filter integral gain ( x 10000) for accelerometer
     uint16_t dcm_kp_mag;                    // DCM filter proportional gain ( x 10000) for magnetometer and GPS heading
     uint16_t dcm_ki_mag;                    // DCM filter integral gain ( x 10000) for magnetometer and GPS heading
 
-    uint8_t gyro_lpf;                       // gyro LPF setting - values are driver specific, in case of invalid number, a reasonable default ~30-40HZ is chosen.
+    /*
+    sensorAlignmentConfig_t sensorAlignmentConfig;
+
+    uint8_t acc_hardware;                   // Which acc hardware to use on boards with more than one device
+
 
     gyroConfig_t gyroConfig;
-
-    barometerConfig_t barometerConfig;
 
     uint8_t mag_hardware;                   // Which mag hardware to use on boards with more than one device
     uint8_t baro_hardware;                  // Barometer hardware to use
 
-    flightDynamicsTrims_t accZero;          // Accelerometer offset
-    flightDynamicsTrims_t accGain;          // Accelerometer gain to read exactly 1G
     flightDynamicsTrims_t magZero;          // Compass offset
+    */
 
     batteryConfig_t batteryConfig;
 

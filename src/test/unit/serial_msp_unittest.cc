@@ -92,7 +92,7 @@ extern "C" {
     failsafeConfig_t failsafeConfig;
     boardAlignment_t boardAlignment;
     escAndServoConfig_t escAndServoConfig;
-
+    sensorAlignmentConfig_t sensorAlignmentConfig;
 
     const pgRegistry_t __pg_registry[] =
     {

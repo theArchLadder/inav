@@ -21,6 +21,13 @@
 #define PG_MOTOR_MIXER 4
 #define PG_BLACKBOX_CONFIG 5
 #define PG_ESC_AND_SERVO_CONFIG 6
+#define PG_SENSOR_SELECTION_CONFIG 7
+#define PG_SENSOR_ALIGNMENT_CONFIG 8
+#define PG_MAG_CONFIG 9
+#define PG_GYRO_CONFIG 10
+
+#define PG_BARO_CONFIG 252
+#define PG_ACC_CONFIG 253
 
 // FIXME remove/adjust after migration
 #define PG_PROFILE 254
