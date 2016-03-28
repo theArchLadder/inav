@@ -466,11 +466,11 @@ STATIC_UNIT_TESTED void resetConf(void)
     resetFlight3DConfig(&masterConfig.flight3DConfig);
 
 #ifdef BRUSHED_MOTORS
-    masterConfig.motor_pwm_rate = BRUSHED_MOTORS_PWM_RATE;
+    escAndServoConfig.motor_pwm_rate = BRUSHED_MOTORS_PWM_RATE;
 #else
-    masterConfig.motor_pwm_rate = BRUSHLESS_MOTORS_PWM_RATE;
+    escAndServoConfig.motor_pwm_rate = BRUSHLESS_MOTORS_PWM_RATE;
 #endif
-    masterConfig.servo_pwm_rate = 50;
+    escAndServoConfig.servo_pwm_rate = 50;
 
 #ifdef GPS
     // gps/nav stuff
@@ -592,7 +592,7 @@ STATIC_UNIT_TESTED void resetConf(void)
     masterConfig.rxConfig.spektrum_sat_bind = 5;
     escAndServoConfig.minthrottle = 1000;
     escAndServoConfig.maxthrottle = 2000;
-    masterConfig.motor_pwm_rate = 32000;
+    escAndServoConfig.motor_pwm_rate = 32000;
     masterConfig.looptime = 2000;
     currentProfile->pidProfile.P8[ROLL] = 36;
     currentProfile->pidProfile.P8[PITCH] = 36;
