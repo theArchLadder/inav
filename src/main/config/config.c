@@ -63,6 +63,7 @@
 #include "rx/rx.h"
 
 #include "blackbox/blackbox_io.h"
+#include "blackbox/blackbox.h"
 
 #include "telemetry/telemetry.h"
 
@@ -542,12 +543,16 @@ STATIC_UNIT_TESTED void resetConf(void)
 #ifdef BLACKBOX
 #ifdef ENABLE_BLACKBOX_LOGGING_ON_SPIFLASH_BY_DEFAULT
     featureSet(FEATURE_BLACKBOX);
-    masterConfig.blackbox_device = BLACKBOX_DEVICE_FLASH;
+    blackboxConfig.device = BLACKBOX_DEVICE_FLASH;
+#elif defined(ENABLE_BLACKBOX_LOGGING_ON_SDCARD_BY_DEFAULT)
+    featureSet(FEATURE_BLACKBOX);
+    blackboxConfig.device = BLACKBOX_DEVICE_SDCARD;
 #else
-    masterConfig.blackbox_device = BLACKBOX_DEVICE_SERIAL;
+    blackboxConfig.device = BLACKBOX_DEVICE_SERIAL;
 #endif
-    masterConfig.blackbox_rate_num = 1;
-    masterConfig.blackbox_rate_denom = 1;
+
+    blackboxConfig.rate_num = 1;
+    blackboxConfig.rate_denom = 1;
 #endif
 
     // alternative defaults settings for COLIBRI RACE targets

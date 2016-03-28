@@ -22,6 +22,7 @@ typedef struct master_t {
     uint8_t mixerMode;
     uint32_t enabledFeatures;
     uint8_t persistentFlags;
+
     uint16_t looptime;                      // imu loop time in us
     uint8_t emf_avoidance;                   // change pll settings to avoid noise in the uhf band
     uint8_t i2c_overclock;                  // Overclock i2c Bus for faster IMU readings
@@ -94,12 +95,6 @@ typedef struct master_t {
 
     uint8_t current_profile_index;
     controlRateConfig_t controlRateProfiles[MAX_CONTROL_RATE_PROFILE_COUNT];
-
-#ifdef BLACKBOX
-    uint8_t blackbox_rate_num;
-    uint8_t blackbox_rate_denom;
-    uint8_t blackbox_device;
-#endif
 
     uint32_t beeper_off_flags;
     uint32_t prefered_beeper_off_flags;
