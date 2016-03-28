@@ -590,8 +590,8 @@ STATIC_UNIT_TESTED void resetConf(void)
 #endif
     masterConfig.rxConfig.serialrx_provider = 1;
     masterConfig.rxConfig.spektrum_sat_bind = 5;
-    masterConfig.escAndServoConfig.minthrottle = 1000;
-    masterConfig.escAndServoConfig.maxthrottle = 2000;
+    escAndServoConfig.minthrottle = 1000;
+    escAndServoConfig.maxthrottle = 2000;
     masterConfig.motor_pwm_rate = 32000;
     masterConfig.looptime = 2000;
     currentProfile->pidProfile.P8[ROLL] = 36;
