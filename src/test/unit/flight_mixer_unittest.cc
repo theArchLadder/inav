@@ -53,6 +53,8 @@ extern "C" {
 
     gimbalConfig_t testGimbalConfig;
     gimbalConfig_t *gimbalConfig = &testGimbalConfig;
+
+    escAndServoConfig_t escAndServoConfig;
 }
 
 #include "unittest_macros.h"
@@ -158,7 +160,6 @@ class BasicMixerIntegrationTest : public ::testing::Test {
 protected:
     mixerConfig_t mixerConfig;
     rxConfig_t rxConfig;
-    escAndServoConfig_t escAndServoConfig;
     servoParam_t servoConf[MAX_SUPPORTED_SERVOS];
     gimbalConfig_t gimbalConfig = {
         .mode = GIMBAL_MODE_NORMAL
@@ -195,7 +196,6 @@ protected:
         mixerUseConfigs(
             servoConf,
             NULL,
-            &escAndServoConfig,
             &mixerConfig,
             NULL,
             &rxConfig

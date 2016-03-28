@@ -31,6 +31,7 @@
 #include <common/maths.h>
 #include <common/typeconversion.h>
 #include <common/printf.h>
+#include <common/axis.h>
 
 #include "config/parameter_group.h"
 
@@ -38,15 +39,13 @@
 #include "drivers/system.h"
 #include "drivers/serial.h"
 
+#include "flight/pid.h"
+#include "flight/failsafe.h"
 
 #include "sensors/battery.h"
 
 #include "io/rc_controls.h"
 #include "io/ledstrip.h"
-
-#include "rx/rx.h"
-
-#include "flight/failsafe.h"
 
 #include "config/runtime_config.h"
 #include "config/config.h"

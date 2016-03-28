@@ -32,8 +32,7 @@ typedef struct master_t {
 #ifdef USE_SERVOS
     servoMixer_t customServoMixer[MAX_SERVO_RULES];
 #endif
-    // motor/esc/servo related stuff
-    escAndServoConfig_t escAndServoConfig;
+
     flight3DConfig_t flight3DConfig;
 
     uint16_t motor_pwm_rate;                // The update rate of motor outputs (50-498Hz)

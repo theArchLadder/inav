@@ -82,11 +82,15 @@
 #include "config/config_profile.h"
 #include "config/config_master.h"
 
+// from rc_controls.h
+void useRcControlsConfig(modeActivationCondition_t *modeActivationConditions, pidProfile_t *pidProfileToUse);
+
+#ifndef DEFAULT_RX_FEATURE
+#define DEFAULT_RX_FEATURE FEATURE_RX_PARALLEL_PWM
+#endif
+
 #define BRUSHED_MOTORS_PWM_RATE 16000
 #define BRUSHLESS_MOTORS_PWM_RATE 400
-
-void useRcControlsConfig(modeActivationCondition_t *modeActivationConditions, escAndServoConfig_t *escAndServoConfigToUse, pidProfile_t *pidProfileToUse);
-
 
 static uint32_t activeFeaturesLatch = 0;
 
@@ -377,7 +381,7 @@ static void setControlRateProfile(uint8_t profileIndex)
 
 uint16_t getCurrentMinthrottle(void)
 {
-    return masterConfig.escAndServoConfig.minthrottle;
+    return escAndServoConfig.minthrottle;
 }
 
 // Default settings
@@ -458,7 +462,7 @@ STATIC_UNIT_TESTED void resetConf(void)
     resetMixerConfig(&masterConfig.mixerConfig);
 
     // Motor/ESC/Servo
-    resetEscAndServoConfig(&masterConfig.escAndServoConfig);
+    resetEscAndServoConfig(&escAndServoConfig);
     resetFlight3DConfig(&masterConfig.flight3DConfig);
 
 #ifdef BRUSHED_MOTORS
@@ -670,7 +674,7 @@ void activateControlRateConfig(void)
 {
     generatePitchRollCurve(currentControlRateProfile);
     generateYawCurve(currentControlRateProfile);
-    generateThrottleCurve(currentControlRateProfile, &masterConfig.escAndServoConfig);
+    generateThrottleCurve(currentControlRateProfile, &escAndServoConfig);
 }
 
 void activateConfig(void)
@@ -683,7 +687,6 @@ void activateConfig(void)
 
     useRcControlsConfig(
         currentProfile->modeActivationConditions,
-        &masterConfig.escAndServoConfig,
         &currentProfile->pidProfile
     );
 
@@ -704,7 +707,6 @@ void activateConfig(void)
         currentProfile->servoConf,
 #endif
         &masterConfig.flight3DConfig,
-        &masterConfig.escAndServoConfig,
         &masterConfig.mixerConfig,
         &masterConfig.rxConfig
     );
@@ -723,7 +725,6 @@ void activateConfig(void)
     navigationUseRcControlsConfig(&currentProfile->rcControlsConfig);
     navigationUseRxConfig(&masterConfig.rxConfig);
     navigationUseFlight3DConfig(&masterConfig.flight3DConfig);
-    navigationUseEscAndServoConfig(&masterConfig.escAndServoConfig);
 #endif
 
 #ifdef BARO

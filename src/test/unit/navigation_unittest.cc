@@ -148,6 +148,8 @@ bool persistentFlag(uint8_t mask)
     return true;
 }
 
+escAndServoConfig_t escAndServoConfig;
+
 uint16_t enableFlightMode(flightModeFlags_e mask)
 {
     return flightModeFlags |= (mask);

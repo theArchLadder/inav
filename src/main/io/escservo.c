@@ -15,13 +15,28 @@
  * along with Cleanflight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define PG_FAILSAFE_CONFIG 1
-#define PG_BOARD_ALIGNMENT 2
-#define PG_GIMBAL_CONFIG 3
-#define PG_MOTOR_MIXER 4
-#define PG_BLACKBOX_CONFIG 5
-#define PG_ESC_AND_SERVO_CONFIG 6
+#include <stdbool.h>
+#include <stdint.h>
 
-// FIXME remove/adjust after migration
-#define PG_PROFILE 254
-#define PG_MASTER 255
+#include <platform.h>
+
+#include "debug.h"
+
+#include "config/parameter_group.h"
+#include "config/parameter_group_ids.h"
+
+#include "io/gimbal.h"
+
+#include "escservo.h"
+
+escAndServoConfig_t escAndServoConfig;
+
+static const pgRegistry_t escAndServoConfigRegistry PG_REGISTRY_SECTION =
+{
+    .base = (uint8_t *)&escAndServoConfig,
+    .size = sizeof(escAndServoConfig),
+    .pgn = PG_ESC_AND_SERVO_CONFIG,
+    .format = 0,
+    .flags = PGC_SYSTEM
+};
+

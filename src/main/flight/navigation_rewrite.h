@@ -220,14 +220,12 @@ void navigationUsePIDs(pidProfile_t *pidProfile);
 void navigationUseConfig(navConfig_t *navConfigToUse);
 void navigationUseRcControlsConfig(rcControlsConfig_t *initialRcControlsConfig);
 void navigationUseRxConfig(rxConfig_t * initialRxConfig);
-void navigationUseEscAndServoConfig(escAndServoConfig_t * initialEscAndServoConfig);
 void navigationUseFlight3DConfig(flight3DConfig_t * initialFlight3DConfig);
 void navigationInit(navConfig_t *initialnavConfig,
                     pidProfile_t *initialPidProfile,
                     rcControlsConfig_t *initialRcControlsConfig,
                     rxConfig_t * initialRxConfig,
-                    flight3DConfig_t * initialFlight3DConfig,
-                    escAndServoConfig_t * initialEscAndServoConfig);
+                    flight3DConfig_t * initialFlight3DConfig);
 
 /* Navigation system updates */
 void updateWaypointsAndNavigationMode(void);

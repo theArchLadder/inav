@@ -342,7 +342,7 @@ void applyFixedWingPitchRollThrottleController(void)
         // PITCH angle is measured in opposite direction ( >0 - dive, <0 - climb)
         pitchCorrection = constrain(pitchCorrection, -DEGREES_TO_CENTIDEGREES(posControl.navConfig->fw_max_dive_angle), DEGREES_TO_CENTIDEGREES(posControl.navConfig->fw_max_climb_angle));
         rcCommand[PITCH] = -pidAngleToRcCommand(pitchCorrection);
-        rcCommand[THROTTLE] = constrain(throttleCorrection, posControl.escAndServoConfig->minthrottle, posControl.escAndServoConfig->maxthrottle);
+        rcCommand[THROTTLE] = constrain(throttleCorrection, escAndServoConfig.minthrottle, escAndServoConfig.maxthrottle);
     }
 
     if (isRollAdjustmentValid) {

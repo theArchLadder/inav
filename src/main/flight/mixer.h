@@ -202,7 +202,6 @@ void mixerUseConfigs(
         servoParam_t *servoConfToUse,
 #endif
         flight3DConfig_t *flight3DConfigToUse,
-        struct escAndServoConfig_s *escAndServoConfigToUse,
         mixerConfig_t *mixerConfigToUse,
 		struct rxConfig_s *rxConfigToUse);
 
