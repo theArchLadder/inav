@@ -653,9 +653,9 @@ const clivalue_t valueTable[] = {
     { "align_acc",                  VAR_UINT8  | MASTER_VALUE | MODE_LOOKUP,  &masterConfig.sensorAlignmentConfig.acc_align, .config.lookup = { TABLE_ALIGNMENT }, 0 },
     { "align_mag",                  VAR_UINT8  | MASTER_VALUE | MODE_LOOKUP,  &masterConfig.sensorAlignmentConfig.mag_align, .config.lookup = { TABLE_ALIGNMENT }, 0 },
 
-    { "align_board_roll",           VAR_INT16  | MASTER_VALUE,  &boardAlignment.rollDeciDegrees, .config.minmax = { -1800,  3600 }, 0 },
-    { "align_board_pitch",          VAR_INT16  | MASTER_VALUE,  &boardAlignment.pitchDeciDegrees, .config.minmax = { -1800,  3600 }, 0 },
-    { "align_board_yaw",            VAR_INT16  | MASTER_VALUE,  &boardAlignment.yawDeciDegrees, .config.minmax = { -1800,  3600 }, 0 },
+    { "align_board_roll",           VAR_INT16  | MIGRATED_MASTER_VALUE, 0,  .config.minmax = { -1800,  3600 } , PG_BOARD_ALIGNMENT, offsetof(boardAlignment_t, rollDeciDegrees)},
+    { "align_board_pitch",          VAR_INT16  | MIGRATED_MASTER_VALUE, 0,  .config.minmax = { -1800,  3600 } , PG_BOARD_ALIGNMENT, offsetof(boardAlignment_t, pitchDeciDegrees)},
+    { "align_board_yaw",            VAR_INT16  | MIGRATED_MASTER_VALUE, 0,  .config.minmax = { -1800,  3600 } , PG_BOARD_ALIGNMENT, offsetof(boardAlignment_t, yawDeciDegrees)},
 
     { "gyro_lpf",                   VAR_UINT8  | MASTER_VALUE | MODE_LOOKUP,  &masterConfig.gyro_lpf, .config.lookup = { TABLE_GYRO_LPF } },
     { "moron_threshold",            VAR_UINT8  | MASTER_VALUE,  &masterConfig.gyroConfig.gyroMovementCalibrationThreshold, .config.minmax = { 0,  128 }, 0 },
