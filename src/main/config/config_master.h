@@ -35,29 +35,12 @@ typedef struct master_t {
 
     flight3DConfig_t flight3DConfig;
 
-
     int8_t yaw_control_direction;           // change control direction of yaw (inverted, normal)
 
     uint16_t dcm_kp_acc;                    // DCM filter proportional gain ( x 10000) for accelerometer
     uint16_t dcm_ki_acc;                    // DCM filter integral gain ( x 10000) for accelerometer
     uint16_t dcm_kp_mag;                    // DCM filter proportional gain ( x 10000) for magnetometer and GPS heading
     uint16_t dcm_ki_mag;                    // DCM filter integral gain ( x 10000) for magnetometer and GPS heading
-
-    /*
-    sensorAlignmentConfig_t sensorAlignmentConfig;
-
-    uint8_t acc_hardware;                   // Which acc hardware to use on boards with more than one device
-
-
-    gyroConfig_t gyroConfig;
-
-    uint8_t mag_hardware;                   // Which mag hardware to use on boards with more than one device
-    uint8_t baro_hardware;                  // Barometer hardware to use
-
-    flightDynamicsTrims_t magZero;          // Compass offset
-    */
-
-    batteryConfig_t batteryConfig;
 
     rxConfig_t rxConfig;
     inputFilteringMode_e inputFilteringMode;  // Use hardware input filtering, e.g. for OrangeRX PPM/PWM receivers.
