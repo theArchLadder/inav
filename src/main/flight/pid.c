@@ -24,6 +24,9 @@
 #include "build_config.h"
 #include "debug.h"
 
+#include "config/parameter_group.h"
+#include "config/parameter_group_ids.h"
+
 #include "common/axis.h"
 #include "common/maths.h"
 #include "common/filter.h"
@@ -48,6 +51,21 @@
 #include "flight/navigation_rewrite.h"
 
 #include "config/runtime_config.h"
+#include "config/config_unittest.h"
+#include "config/config.h"
+
+pidProfile_t pidProfileStorage[MAX_PROFILE_COUNT];
+pidProfile_t *pidProfile;
+
+static const pgRegistry_t pidProfileRegistry PG_REGISTRY_SECTION =
+{
+    .base = (uint8_t *)&pidProfileStorage,
+    .ptr = (uint8_t **)&pidProfile,
+    .size = sizeof(pidProfileStorage[0]),
+    .pgn = PG_PID_PROFILE,
+    .format = 0,
+    .flags = PGC_PROFILE
+};
 
 typedef struct {
     float kP;
@@ -127,7 +145,7 @@ float pidRcCommandToRate(int16_t stick, uint8_t rate)
 #define FP_PID_LEVEL_P_MULTIPLIER   40.0f       // betaflight - 10.0
 #define FP_PID_YAWHOLD_P_MULTIPLIER 80.0f
 
-static void pidOuterLoop(pidProfile_t *pidProfile, rxConfig_t *rxConfig)
+static void pidOuterLoop(rxConfig_t *rxConfig)
 {
     int axis;
     float horizonLevelStrength = 1;
@@ -198,7 +216,7 @@ static void pidOuterLoop(pidProfile_t *pidProfile, rxConfig_t *rxConfig)
     }
 }
 
-static void pidApplyRateController(pidProfile_t *pidProfile, pidState_t *pidState, int axis)
+static void pidApplyRateController(pidState_t *pidState, int axis)
 {
     int n;
 
@@ -263,7 +281,7 @@ static void pidApplyRateController(pidProfile_t *pidProfile, pidState_t *pidStat
 #endif
 }
 
-static void pidInnerLoop(pidProfile_t *pidProfile)
+static void pidInnerLoop(void)
 {
     int axis;
 
@@ -273,8 +291,7 @@ static void pidInnerLoop(pidProfile_t *pidProfile)
         pidState[axis].rateTarget = constrainf(pidState[axis].rateTarget, -GYRO_SATURATION_LIMIT, +GYRO_SATURATION_LIMIT);
 
         /* Apply PID setpoint controller */
-        pidApplyRateController(pidProfile,
-                               &pidState[axis],
+        pidApplyRateController(&pidState[axis],
                                axis);     // scale gyro rate to DPS
     }
 }
@@ -288,7 +305,7 @@ static void getRateTarget(controlRateConfig_t *controlRateConfig)
     }
 }
 
-void updatePIDCoefficients(pidProfile_t *pidProfile, controlRateConfig_t *controlRateConfig) {
+void updatePIDCoefficients(controlRateConfig_t *controlRateConfig) {
     
     uint8_t axis;
     
@@ -335,7 +352,7 @@ static void getGyroRate(void)
     }
 }
 
-void pidController(pidProfile_t *pidProfile, controlRateConfig_t *controlRateConfig, rxConfig_t *rxConfig)
+void pidController(controlRateConfig_t *controlRateConfig, rxConfig_t *rxConfig)
 {
     
     /* Step 1: Calculate gyro rates */
@@ -346,9 +363,9 @@ void pidController(pidProfile_t *pidProfile, controlRateConfig_t *controlRateCon
 
     /* Step 3: Run outer loop control for ANGLE and HORIZON */
     if (FLIGHT_MODE(ANGLE_MODE) || FLIGHT_MODE(HORIZON_MODE) || FLIGHT_MODE(HEADING_LOCK)) {
-        pidOuterLoop(pidProfile, rxConfig);
+        pidOuterLoop(rxConfig);
     }
 
     /* Step 4: Run gyro-driven inner loop control */
-    pidInnerLoop(pidProfile);
+    pidInnerLoop();
 }

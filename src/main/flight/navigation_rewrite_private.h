@@ -269,7 +269,6 @@ typedef struct {
 
     navConfig_t *               navConfig;
     rcControlsConfig_t *        rcControlsConfig;
-    pidProfile_t *              pidProfile;
     rxConfig_t *                rxConfig;
     flight3DConfig_t *          flight3DConfig;
 } navigationPosControl_t;

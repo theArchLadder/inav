@@ -2168,33 +2168,31 @@ void navigationUseRxConfig(rxConfig_t * initialRxConfig)
     posControl.rxConfig = initialRxConfig;
 }
 
-void navigationUsePIDs(pidProfile_t *initialPidProfile)
+void navigationUsePIDs(void)
 {
     int axis;
 
-    posControl.pidProfile = initialPidProfile;
-
     // Brake time parameter
-    posControl.posDecelerationTime = (float)posControl.pidProfile->I8[PIDPOS] / 100.0f;
+    posControl.posDecelerationTime = (float)pidProfile->I8[PIDPOS] / 100.0f;
 
     // Position controller expo (taret vel expo for MC)
-    posControl.posResponseExpo = constrainf((float)posControl.pidProfile->D8[PIDPOS] / 100.0f, 0.0f, 1.0f);
+    posControl.posResponseExpo = constrainf((float)pidProfile->D8[PIDPOS] / 100.0f, 0.0f, 1.0f);
 
     // Initialize position hold P-controller
     for (axis = 0; axis < 2; axis++) {
-        navPInit(&posControl.pids.pos[axis], (float)posControl.pidProfile->P8[PIDPOS] / 100.0f);
+        navPInit(&posControl.pids.pos[axis], (float)pidProfile->P8[PIDPOS] / 100.0f);
 
-        navPidInit(&posControl.pids.vel[axis], (float)posControl.pidProfile->P8[PIDPOSR] / 100.0f,
-                                               (float)posControl.pidProfile->I8[PIDPOSR] / 100.0f,
-                                               (float)posControl.pidProfile->D8[PIDPOSR] / 100.0f);
+        navPidInit(&posControl.pids.vel[axis], (float)pidProfile->P8[PIDPOSR] / 100.0f,
+                                               (float)pidProfile->I8[PIDPOSR] / 100.0f,
+                                               (float)pidProfile->D8[PIDPOSR] / 100.0f);
     }
 
     // Initialize altitude hold PID-controllers (pos_z, vel_z, acc_z
-    navPInit(&posControl.pids.pos[Z], (float)posControl.pidProfile->P8[PIDALT] / 100.0f);
+    navPInit(&posControl.pids.pos[Z], (float)pidProfile->P8[PIDALT] / 100.0f);
 
-    navPidInit(&posControl.pids.vel[Z], (float)posControl.pidProfile->P8[PIDVEL] / 100.0f,
-                                        (float)posControl.pidProfile->I8[PIDVEL] / 100.0f,
-                                        (float)posControl.pidProfile->D8[PIDVEL] / 100.0f);
+    navPidInit(&posControl.pids.vel[Z], (float)pidProfile->P8[PIDVEL] / 100.0f,
+                                        (float)pidProfile->I8[PIDVEL] / 100.0f,
+                                        (float)pidProfile->D8[PIDVEL] / 100.0f);
 
     // Initialize surface tracking PID
     navPidInit(&posControl.pids.surface, 2.0f,
@@ -2202,17 +2200,16 @@ void navigationUsePIDs(pidProfile_t *initialPidProfile)
                                          0.0f);
 
     // Initialize fixed wing PID controllers
-    navPidInit(&posControl.pids.fw_nav, (float)posControl.pidProfile->P8[PIDNAVR] / 100.0f,
-                                        (float)posControl.pidProfile->I8[PIDNAVR] / 100.0f,
-                                        (float)posControl.pidProfile->D8[PIDNAVR] / 100.0f);
+    navPidInit(&posControl.pids.fw_nav, (float)pidProfile->P8[PIDNAVR] / 100.0f,
+                                        (float)pidProfile->I8[PIDNAVR] / 100.0f,
+                                        (float)pidProfile->D8[PIDNAVR] / 100.0f);
 
-    navPidInit(&posControl.pids.fw_alt, (float)posControl.pidProfile->P8[PIDALT] / 100.0f,
-                                        (float)posControl.pidProfile->I8[PIDALT] / 100.0f,
-                                        (float)posControl.pidProfile->D8[PIDALT] / 100.0f);
+    navPidInit(&posControl.pids.fw_alt, (float)pidProfile->P8[PIDALT] / 100.0f,
+                                        (float)pidProfile->I8[PIDALT] / 100.0f,
+                                        (float)pidProfile->D8[PIDALT] / 100.0f);
 }
 
 void navigationInit(navConfig_t *initialnavConfig,
-                    pidProfile_t *initialPidProfile,
                     rcControlsConfig_t *initialRcControlsConfig,
                     rxConfig_t * initialRxConfig,
                     flight3DConfig_t * initialFlight3DConfig)
@@ -2242,7 +2239,7 @@ void navigationInit(navConfig_t *initialnavConfig,
 
     /* Use system config */
     navigationUseConfig(initialnavConfig);
-    navigationUsePIDs(initialPidProfile);
+    navigationUsePIDs();
     navigationUseRcControlsConfig(initialRcControlsConfig);
     navigationUseRxConfig(initialRxConfig);
     navigationUseFlight3DConfig(initialFlight3DConfig);

@@ -104,9 +104,6 @@ extern uint16_t cycleTime; // FIXME dependency on mw.c
 extern uint16_t rssi; // FIXME dependency on mw.c
 extern void resetPidProfile(pidProfile_t *pidProfile);
 
-// from rc_controls.h
-void useRcControlsConfig(modeActivationCondition_t *modeActivationConditions, pidProfile_t *pidProfileToUse);
-
 static const char * const flightControllerIdentifier = INAV_IDENTIFIER; // 4 UPPER CASE alpha numeric characters that identify the flight controller.
 static const char * const boardIdentifier = TARGET_BOARD_IDENTIFIER;
 
@@ -870,9 +867,9 @@ static bool processOutCommand(uint8_t cmdMSP)
     case MSP_PID:
         headSerialReply(3 * PID_ITEM_COUNT);
         for (i = 0; i < PID_ITEM_COUNT; i++) {
-            serialize8(currentProfile->pidProfile.P8[i]);
-            serialize8(currentProfile->pidProfile.I8[i]);
-            serialize8(currentProfile->pidProfile.D8[i]);
+            serialize8(pidProfile->P8[i]);
+            serialize8(pidProfile->I8[i]);
+            serialize8(pidProfile->D8[i]);
         }
         break;
     case MSP_PIDNAMES:
@@ -1315,9 +1312,9 @@ static bool processInCommand(void)
         break;
     case MSP_SET_PID:
         for (i = 0; i < PID_ITEM_COUNT; i++) {
-            currentProfile->pidProfile.P8[i] = read8();
-            currentProfile->pidProfile.I8[i] = read8();
-            currentProfile->pidProfile.D8[i] = read8();
+            pidProfile->P8[i] = read8();
+            pidProfile->I8[i] = read8();
+            pidProfile->D8[i] = read8();
         }
         break;
     case MSP_SET_MODE_RANGE:
@@ -1332,7 +1329,7 @@ static bool processInCommand(void)
                 mac->range.startStep = read8();
                 mac->range.endStep = read8();
 
-                useRcControlsConfig(currentProfile->modeActivationConditions, &currentProfile->pidProfile);
+                useRcControlsConfig(currentProfile->modeActivationConditions);
             } else {
                 headSerialError(0);
             }
@@ -1469,8 +1466,8 @@ static bool processInCommand(void)
         break;
 
     case MSP_SET_RESET_CURR_PID:
-        resetPidProfile(&currentProfile->pidProfile);
-        break;
+        resetPidProfile(pidProfile);
+        break;    
 
     case MSP_SET_SENSOR_ALIGNMENT:
         sensorAlignmentConfig.gyro_align = read8();

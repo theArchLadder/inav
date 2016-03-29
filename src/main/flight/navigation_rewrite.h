@@ -216,13 +216,12 @@ typedef struct {
     navWaypointActions_e    activeWpAction;
 } navSystemStatus_t;
 
-void navigationUsePIDs(pidProfile_t *pidProfile);
+void navigationUsePIDs(void);
 void navigationUseConfig(navConfig_t *navConfigToUse);
 void navigationUseRcControlsConfig(rcControlsConfig_t *initialRcControlsConfig);
 void navigationUseRxConfig(rxConfig_t * initialRxConfig);
 void navigationUseFlight3DConfig(flight3DConfig_t * initialFlight3DConfig);
 void navigationInit(navConfig_t *initialnavConfig,
-                    pidProfile_t *initialPidProfile,
                     rcControlsConfig_t *initialRcControlsConfig,
                     rxConfig_t * initialRxConfig,
                     flight3DConfig_t * initialFlight3DConfig);

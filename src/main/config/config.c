@@ -82,9 +82,6 @@
 #include "config/config_profile.h"
 #include "config/config_master.h"
 
-// from rc_controls.h
-void useRcControlsConfig(modeActivationCondition_t *modeActivationConditions, pidProfile_t *pidProfileToUse);
-
 #ifndef DEFAULT_RX_FEATURE
 #define DEFAULT_RX_FEATURE FEATURE_RX_PARALLEL_PWM
 #endif
@@ -501,7 +498,10 @@ STATIC_UNIT_TESTED void resetConf(void)
     masterConfig.gyroSync = 0;
     masterConfig.gyroSyncDenominator = 2;
 
-    resetPidProfile(&currentProfile->pidProfile);
+    resetPidProfile(pidProfile);
+#ifdef GTUNE
+    resetGTuneConfig(gtuneConfig);
+#endif
 
     resetControlRateConfig(&controlRateProfiles[0]);
 
@@ -602,8 +602,8 @@ STATIC_UNIT_TESTED void resetConf(void)
     escAndServoConfig.maxthrottle = 2000;
     escAndServoConfig.motor_pwm_rate = 32000;
     masterConfig.looptime = 2000;
-    currentProfile->pidProfile.P8[ROLL] = 36;
-    currentProfile->pidProfile.P8[PITCH] = 36;
+    pidProfile->P8[PIDROLL] = 36;
+    pidProfile->P8[PIDPITCH] = 36;
     failsafeConfig.failsafe_delay = 2;
     failsafeConfig.failsafe_off_delay = 0;
     currentControlRateProfile->rcRate8 = 130;
@@ -694,8 +694,7 @@ void activateConfig(void)
     resetAdjustmentStates();
 
     useRcControlsConfig(
-        currentProfile->modeActivationConditions,
-        &currentProfile->pidProfile
+        currentProfile->modeActivationConditions
     );
 
 #ifdef TELEMETRY
@@ -719,11 +718,11 @@ void activateConfig(void)
     imuRuntimeConfig.dcm_ki_mag = masterConfig.dcm_ki_mag / 10000.0f;
     imuRuntimeConfig.small_angle = masterConfig.small_angle;
 
-    imuConfigure(&imuRuntimeConfig, &currentProfile->pidProfile);
+    imuConfigure(&imuRuntimeConfig);
 
 #ifdef NAV
     navigationUseConfig(&masterConfig.navConfig);
-    navigationUsePIDs(&currentProfile->pidProfile);
+    navigationUsePIDs();
     navigationUseRcControlsConfig(&currentProfile->rcControlsConfig);
     navigationUseRxConfig(&masterConfig.rxConfig);
     navigationUseFlight3DConfig(&masterConfig.flight3DConfig);

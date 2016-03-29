@@ -295,7 +295,7 @@ void applyMagHold(void)
     dif *= masterConfig.yaw_control_direction;
 
     if (STATE(SMALL_ANGLE)) {
-        rcCommand[YAW] = dif * currentProfile->pidProfile.P8[PIDMAG] / 30;
+        rcCommand[YAW] = dif * pidProfile->P8[PIDMAG] / 30;
     }
 }
 
@@ -630,7 +630,7 @@ void taskMainPidLoop(void)
         }
     }
 
-    pidController(&currentProfile->pidProfile, currentControlRateProfile, &masterConfig.rxConfig);
+    pidController(currentControlRateProfile, &masterConfig.rxConfig);
 
 #ifdef HIL
     if (hilActive) {
@@ -717,7 +717,7 @@ bool taskUpdateRxCheck(uint32_t currentDeltaTime)
 void taskUpdateRxMain(void)
 {
     processRx();
-    updatePIDCoefficients(&currentProfile->pidProfile, currentControlRateProfile);
+    updatePIDCoefficients(currentControlRateProfile);
     isRXDataNew = true;
 }
 

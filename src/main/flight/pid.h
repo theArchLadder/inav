@@ -60,12 +60,10 @@ typedef struct pidProfile_s {
 
 extern int16_t axisPID[XYZ_AXIS_COUNT];
 extern int32_t axisPID_P[3], axisPID_I[3], axisPID_D[3], axisPID_Setpoint[3];
+extern pidProfile_t *pidProfile;
 
 void pidResetErrorAccumulators(void);
-
-void updatePIDCoefficients(pidProfile_t *pidProfile, controlRateConfig_t *controlRateConfig);
-
+void updatePIDCoefficients(controlRateConfig_t *controlRateConfig);
 float pidRcCommandToAngle(int16_t stick);
 int16_t pidAngleToRcCommand(float angleDeciDegrees);
-
-void pidController(pidProfile_t *pidProfile, controlRateConfig_t *controlRateConfig, rxConfig_t *rxConfig);
+void pidController(controlRateConfig_t *controlRateConfig, rxConfig_t *rxConfig);

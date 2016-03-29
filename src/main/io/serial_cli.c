@@ -556,25 +556,25 @@ const clivalue_t valueTable[] = {
 #endif
 
 #ifdef NAV
-    { "nav_alt_p",                  VAR_UINT8  | PROFILE_VALUE, 0, .config.minmax = { 0,  255 }, PG_PROFILE, offsetof(profile_t, pidProfile.P8[PIDALT]) },
-    { "nav_alt_i",                  VAR_UINT8  | PROFILE_VALUE, 0, .config.minmax = { 0,  255 }, PG_PROFILE, offsetof(profile_t, pidProfile.I8[PIDALT]) },
-    { "nav_alt_d",                  VAR_UINT8  | PROFILE_VALUE, 0, .config.minmax = { 0,  255 }, PG_PROFILE, offsetof(profile_t, pidProfile.D8[PIDALT]) },
+    { "nav_alt_p",                  VAR_UINT8  | PROFILE_VALUE, 0, .config.minmax = { 0,  255 }, PG_PID_PROFILE, offsetof(pidProfile_t, P8[PIDALT]) },
+    { "nav_alt_i",                  VAR_UINT8  | PROFILE_VALUE, 0, .config.minmax = { 0,  255 }, PG_PID_PROFILE, offsetof(pidProfile_t, I8[PIDALT]) },
+    { "nav_alt_d",                  VAR_UINT8  | PROFILE_VALUE, 0, .config.minmax = { 0,  255 }, PG_PID_PROFILE, offsetof(pidProfile_t, D8[PIDALT]) },
 
-    { "nav_vel_p",                  VAR_UINT8  | PROFILE_VALUE, 0, .config.minmax = { 0,  255 }, PG_PROFILE, offsetof(profile_t, pidProfile.P8[PIDVEL]) },
-    { "nav_vel_i",                  VAR_UINT8  | PROFILE_VALUE, 0, .config.minmax = { 0,  255 }, PG_PROFILE, offsetof(profile_t, pidProfile.I8[PIDVEL]) },
-    { "nav_vel_d",                  VAR_UINT8  | PROFILE_VALUE, 0, .config.minmax = { 0,  255 }, PG_PROFILE, offsetof(profile_t, pidProfile.D8[PIDVEL]) },
+    { "nav_vel_p",                  VAR_UINT8  | PROFILE_VALUE, 0, .config.minmax = { 0,  255 }, PG_PID_PROFILE, offsetof(pidProfile_t, P8[PIDVEL]) },
+    { "nav_vel_i",                  VAR_UINT8  | PROFILE_VALUE, 0, .config.minmax = { 0,  255 }, PG_PID_PROFILE, offsetof(pidProfile_t, I8[PIDVEL]) },
+    { "nav_vel_d",                  VAR_UINT8  | PROFILE_VALUE, 0, .config.minmax = { 0,  255 }, PG_PID_PROFILE, offsetof(pidProfile_t, D8[PIDVEL]) },
 
-    { "nav_pos_p",                  VAR_UINT8  | PROFILE_VALUE, 0, .config.minmax = { 0,  255 }, PG_PROFILE, offsetof(profile_t, pidProfile.P8[PIDPOS]) },
-    { "nav_pos_i",                  VAR_UINT8  | PROFILE_VALUE, 0, .config.minmax = { 0,  255 }, PG_PROFILE, offsetof(profile_t, pidProfile.I8[PIDPOS]) },
-    { "nav_pos_d",                  VAR_UINT8  | PROFILE_VALUE, 0, .config.minmax = { 0,  255 }, PG_PROFILE, offsetof(profile_t, pidProfile.D8[PIDPOS]) },
+    { "nav_pos_p",                  VAR_UINT8  | PROFILE_VALUE, 0, .config.minmax = { 0,  255 }, PG_PID_PROFILE, offsetof(pidProfile_t, P8[PIDPOS]) },
+    { "nav_pos_i",                  VAR_UINT8  | PROFILE_VALUE, 0, .config.minmax = { 0,  255 }, PG_PID_PROFILE, offsetof(pidProfile_t, I8[PIDPOS]) },
+    { "nav_pos_d",                  VAR_UINT8  | PROFILE_VALUE, 0, .config.minmax = { 0,  255 }, PG_PID_PROFILE, offsetof(pidProfile_t, D8[PIDPOS]) },
 
-    { "nav_posr_p",                 VAR_UINT8  | PROFILE_VALUE, 0, .config.minmax = { 0,  255 }, PG_PROFILE, offsetof(profile_t, pidProfile.P8[PIDPOSR]) },
-    { "nav_posr_i",                 VAR_UINT8  | PROFILE_VALUE, 0, .config.minmax = { 0,  255 }, PG_PROFILE, offsetof(profile_t, pidProfile.I8[PIDPOSR]) },
-    { "nav_posr_d",                 VAR_UINT8  | PROFILE_VALUE, 0, .config.minmax = { 0,  255 }, PG_PROFILE, offsetof(profile_t, pidProfile.D8[PIDPOSR]) },
+    { "nav_posr_p",                 VAR_UINT8  | PROFILE_VALUE, 0, .config.minmax = { 0,  255 }, PG_PID_PROFILE, offsetof(pidProfile_t, P8[PIDPOSR]) },
+    { "nav_posr_i",                 VAR_UINT8  | PROFILE_VALUE, 0, .config.minmax = { 0,  255 }, PG_PID_PROFILE, offsetof(pidProfile_t, I8[PIDPOSR]) },
+    { "nav_posr_d",                 VAR_UINT8  | PROFILE_VALUE, 0, .config.minmax = { 0,  255 }, PG_PID_PROFILE, offsetof(pidProfile_t, D8[PIDPOSR]) },
 
-    { "nav_navr_p",                 VAR_UINT8  | PROFILE_VALUE, 0, .config.minmax = { 0,  255 }, PG_PROFILE, offsetof(profile_t, pidProfile.P8[PIDNAVR]) },
-    { "nav_navr_i",                 VAR_UINT8  | PROFILE_VALUE, 0, .config.minmax = { 0,  255 }, PG_PROFILE, offsetof(profile_t, pidProfile.I8[PIDNAVR]) },
-    { "nav_navr_d",                 VAR_UINT8  | PROFILE_VALUE, 0, .config.minmax = { 0,  255 }, PG_PROFILE, offsetof(profile_t, pidProfile.D8[PIDNAVR]) },
+    { "nav_navr_p",                 VAR_UINT8  | PROFILE_VALUE, 0, .config.minmax = { 0,  255 }, PG_PID_PROFILE, offsetof(pidProfile_t, P8[PIDNAVR]) },
+    { "nav_navr_i",                 VAR_UINT8  | PROFILE_VALUE, 0, .config.minmax = { 0,  255 }, PG_PID_PROFILE, offsetof(pidProfile_t, I8[PIDNAVR]) },
+    { "nav_navr_d",                 VAR_UINT8  | PROFILE_VALUE, 0, .config.minmax = { 0,  255 }, PG_PID_PROFILE, offsetof(pidProfile_t, D8[PIDNAVR]) },
 
 #if defined(INAV_ENABLE_AUTO_MAG_DECLINATION)
     { "inav_auto_mag_decl",         VAR_UINT8  | MASTER_VALUE | MODE_LOOKUP, &masterConfig.navConfig.inav.automatic_mag_declination, .config.lookup = { TABLE_OFF_ON }, 0 },
@@ -677,7 +677,7 @@ const clivalue_t valueTable[] = {
 
     { "yaw_motor_direction",        VAR_INT8   | MASTER_VALUE, &masterConfig.mixerConfig.yaw_motor_direction, .config.minmax = { -1,  1 }, 0 },
     { "yaw_jump_prevention_limit",  VAR_UINT16 | MASTER_VALUE, &masterConfig.mixerConfig.yaw_jump_prevention_limit, .config.minmax = { YAW_JUMP_PREVENTION_LIMIT_LOW,  YAW_JUMP_PREVENTION_LIMIT_HIGH }, 0 },
-    { "yaw_p_limit",                VAR_UINT16 | PROFILE_VALUE, 0,  .config.minmax = { YAW_P_LIMIT_MIN, YAW_P_LIMIT_MAX } , PG_PROFILE, offsetof(profile_t, pidProfile.yaw_p_limit)},
+    { "yaw_p_limit",                VAR_UINT16 | PROFILE_VALUE, 0,  .config.minmax = { YAW_P_LIMIT_MIN, YAW_P_LIMIT_MAX } , PG_PID_PROFILE, offsetof(pidProfile_t, yaw_p_limit)},
 
 #ifdef USE_SERVOS
     { "tri_unarmed_servo",          VAR_INT8   | MASTER_VALUE | MODE_LOOKUP, &masterConfig.mixerConfig.tri_unarmed_servo, .config.lookup = { TABLE_OFF_ON }, 0 },
@@ -723,27 +723,27 @@ const clivalue_t valueTable[] = {
     { "mag_declination",            VAR_INT16  | PROFILE_VALUE, 0,  .config.minmax = { -18000,  18000 } , PG_PROFILE, offsetof(profile_t, mag_declination)},
 #endif
 
-    { "p_pitch",                    VAR_UINT8  | PROFILE_VALUE, 0,  .config.minmax = { PID_MIN,  PID_MAX } , PG_PROFILE, offsetof(profile_t, pidProfile.P8[FD_PITCH])},
-    { "i_pitch",                    VAR_UINT8  | PROFILE_VALUE, 0,  .config.minmax = { PID_MIN,  PID_MAX } , PG_PROFILE, offsetof(profile_t, pidProfile.I8[FD_PITCH])},
-    { "d_pitch",                    VAR_UINT8  | PROFILE_VALUE, 0,  .config.minmax = { PID_MIN,  PID_MAX } , PG_PROFILE, offsetof(profile_t, pidProfile.D8[FD_PITCH])},
-    { "p_roll",                     VAR_UINT8  | PROFILE_VALUE, 0,  .config.minmax = { PID_MIN,  PID_MAX } , PG_PROFILE, offsetof(profile_t, pidProfile.P8[FD_ROLL])},
-    { "i_roll",                     VAR_UINT8  | PROFILE_VALUE, 0,  .config.minmax = { PID_MIN,  PID_MAX } , PG_PROFILE, offsetof(profile_t, pidProfile.I8[FD_ROLL])},
-    { "d_roll",                     VAR_UINT8  | PROFILE_VALUE, 0,  .config.minmax = { PID_MIN,  PID_MAX } , PG_PROFILE, offsetof(profile_t, pidProfile.D8[FD_ROLL])},
-    { "p_yaw",                      VAR_UINT8  | PROFILE_VALUE, 0,  .config.minmax = { PID_MIN,  PID_MAX } , PG_PROFILE, offsetof(profile_t, pidProfile.P8[FD_YAW])},
-    { "i_yaw",                      VAR_UINT8  | PROFILE_VALUE, 0,  .config.minmax = { PID_MIN,  PID_MAX } , PG_PROFILE, offsetof(profile_t, pidProfile.I8[FD_YAW])},
-    { "d_yaw",                      VAR_UINT8  | PROFILE_VALUE, 0,  .config.minmax = { PID_MIN,  PID_MAX } , PG_PROFILE, offsetof(profile_t, pidProfile.D8[FD_YAW])},
+    { "p_pitch",                    VAR_UINT8  | PROFILE_VALUE, 0,  .config.minmax = { PID_MIN,  PID_MAX } , PG_PID_PROFILE, offsetof(pidProfile_t, P8[FD_PITCH])},
+    { "i_pitch",                    VAR_UINT8  | PROFILE_VALUE, 0,  .config.minmax = { PID_MIN,  PID_MAX } , PG_PID_PROFILE, offsetof(pidProfile_t, I8[FD_PITCH])},
+    { "d_pitch",                    VAR_UINT8  | PROFILE_VALUE, 0,  .config.minmax = { PID_MIN,  PID_MAX } , PG_PID_PROFILE, offsetof(pidProfile_t, D8[FD_PITCH])},
+    { "p_roll",                     VAR_UINT8  | PROFILE_VALUE, 0,  .config.minmax = { PID_MIN,  PID_MAX } , PG_PID_PROFILE, offsetof(pidProfile_t, P8[FD_ROLL])},
+    { "i_roll",                     VAR_UINT8  | PROFILE_VALUE, 0,  .config.minmax = { PID_MIN,  PID_MAX } , PG_PID_PROFILE, offsetof(pidProfile_t, I8[FD_ROLL])},
+    { "d_roll",                     VAR_UINT8  | PROFILE_VALUE, 0,  .config.minmax = { PID_MIN,  PID_MAX } , PG_PID_PROFILE, offsetof(pidProfile_t, D8[FD_ROLL])},
+    { "p_yaw",                      VAR_UINT8  | PROFILE_VALUE, 0,  .config.minmax = { PID_MIN,  PID_MAX } , PG_PID_PROFILE, offsetof(pidProfile_t, P8[FD_YAW])},
+    { "i_yaw",                      VAR_UINT8  | PROFILE_VALUE, 0,  .config.minmax = { PID_MIN,  PID_MAX } , PG_PID_PROFILE, offsetof(pidProfile_t, I8[FD_YAW])},
+    { "d_yaw",                      VAR_UINT8  | PROFILE_VALUE, 0,  .config.minmax = { PID_MIN,  PID_MAX } , PG_PID_PROFILE, offsetof(pidProfile_t, D8[FD_YAW])},
 
-    { "p_level",                    VAR_UINT8  | PROFILE_VALUE, 0,  .config.minmax = { PID_MIN,  PID_MAX } , PG_PROFILE, offsetof(profile_t, pidProfile.P8[PIDLEVEL])},
-    { "i_level",                    VAR_UINT8  | PROFILE_VALUE, 0,  .config.minmax = { PID_MIN,  PID_MAX } , PG_PROFILE, offsetof(profile_t, pidProfile.I8[PIDLEVEL])},
-    { "d_level",                    VAR_UINT8  | PROFILE_VALUE, 0,  .config.minmax = { PID_MIN,  PID_MAX } , PG_PROFILE, offsetof(profile_t, pidProfile.D8[PIDLEVEL])},
+    { "p_level",                    VAR_UINT8  | PROFILE_VALUE, 0,  .config.minmax = { PID_MIN,  PID_MAX } , PG_PID_PROFILE, offsetof(pidProfile_t, P8[PIDLEVEL])},
+    { "i_level",                    VAR_UINT8  | PROFILE_VALUE, 0,  .config.minmax = { PID_MIN,  PID_MAX } , PG_PID_PROFILE, offsetof(pidProfile_t, I8[PIDLEVEL])},
+    { "d_level",                    VAR_UINT8  | PROFILE_VALUE, 0,  .config.minmax = { PID_MIN,  PID_MAX } , PG_PID_PROFILE, offsetof(pidProfile_t, D8[PIDLEVEL])},
 
-    { "max_angle_inclination_rll",  VAR_INT16  | PROFILE_VALUE, 0,  .config.minmax = {100, 900 } , PG_PROFILE, offsetof(profile_t, pidProfile.max_angle_inclination[FD_ROLL])},
-    { "max_angle_inclination_pit",  VAR_INT16  | PROFILE_VALUE, 0,  .config.minmax = {100, 900 } , PG_PROFILE, offsetof(profile_t, pidProfile.max_angle_inclination[FD_PITCH])},
+    { "max_angle_inclination_rll",  VAR_INT16  | PROFILE_VALUE, 0,  .config.minmax = {100, 900 } , PG_PID_PROFILE, offsetof(pidProfile_t, max_angle_inclination[FD_ROLL])},
+    { "max_angle_inclination_pit",  VAR_INT16  | PROFILE_VALUE, 0,  .config.minmax = {100, 900 } , PG_PID_PROFILE, offsetof(pidProfile_t, max_angle_inclination[FD_PITCH])},
     
     { "gyro_soft_lpf_hz",           VAR_UINT8  | MIGRATED_MASTER_VALUE, 0,  .config.minmax = {0, 200 } , PG_GYRO_CONFIG, offsetof(gyroConfig_t, gyro_soft_lpf_hz)},
     { "acc_soft_lpf_hz",            VAR_UINT8  | MIGRATED_MASTER_VALUE, 0,  .config.minmax = {0, 200 } , PG_ACC_CONFIG, offsetof(accConfig_t, acc_soft_lpf_hz)},
 
-    { "dterm_lpf_hz",               VAR_UINT8  | PROFILE_VALUE, 0,  .config.minmax = {0, 200 } , PG_PROFILE, offsetof(profile_t, pidProfile.dterm_lpf_hz)},
+    { "dterm_lpf_hz",               VAR_UINT8  | PROFILE_VALUE, 0,  .config.minmax = {0, 200 } , PG_PID_PROFILE, offsetof(pidProfile_t, dterm_lpf_hz)},
 
 #ifdef BLACKBOX
     { "blackbox_rate_num",          VAR_UINT8  | MIGRATED_MASTER_VALUE, 0,  .config.minmax = { 1,  32 } , PG_BLACKBOX_CONFIG, offsetof(blackboxConfig_t, rate_num)},

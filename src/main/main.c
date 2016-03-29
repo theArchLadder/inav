@@ -451,7 +451,6 @@ void init(void)
 #ifdef NAV
         navigationInit(
             &masterConfig.navConfig,
-            &currentProfile->pidProfile,
             &currentProfile->rcControlsConfig,
             &masterConfig.rxConfig,
             &masterConfig.flight3DConfig

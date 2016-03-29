@@ -40,6 +40,7 @@ extern "C" {
     #include "sensors/barometer.h"
 
     #include "config/runtime_config.h"
+    #include "config/config.h"
 
     #include "io/escservo.h"
 
@@ -48,6 +49,10 @@ extern "C" {
     #include "flight/mixer.h"
     #include "flight/pid.h"
     #include "flight/imu.h"
+
+    pidProfile_t testPidProfile[MAX_PROFILE_COUNT];
+    pidProfile_t *pidProfile = &testPidProfile[0];
+
 }
 
 #include "unittest_macros.h"
