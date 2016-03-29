@@ -106,9 +106,9 @@ serialPort_t *loopbackPort;
 void printfSupportInit(void);
 void timerInit(void);
 void telemetryInit(void);
-void serialInit(serialConfig_t *initialSerialConfig, bool softserialEnabled);
-void mspInit(serialConfig_t *serialConfig);
-void cliInit(serialConfig_t *serialConfig);
+void serialInit(bool softserialEnabled);
+void mspInit(void);
+void cliInit(void);
 void failsafeInit(rxConfig_t *intialRxConfig, uint16_t deadband3d_throttle);
 pwmOutputConfiguration_t *pwmInit(drv_pwm_config_t *init);
 #ifdef USE_SERVOS
@@ -119,7 +119,7 @@ void mixerInit(mixerMode_e mixerMode, motorMixer_t *customMotorMixers);
 void mixerUsePWMOutputConfiguration(pwmOutputConfiguration_t *pwmOutputConfiguration);
 void rxInit(rxConfig_t *rxConfig, modeActivationCondition_t *modeActivationConditions);
 void gpsPreInit(gpsConfig_t *initialGpsConfig);
-void gpsInit(serialConfig_t *serialConfig, gpsConfig_t *initialGpsConfig);
+void gpsInit(gpsConfig_t *initialGpsConfig);
 void imuInit(void);
 void displayInit(rxConfig_t *intialRxConfig);
 void loop(void);
@@ -221,7 +221,7 @@ void init(void)
 
     timerInit();  // timer must be initialized before any channel is allocated
 
-    serialInit(&masterConfig.serialConfig, feature(FEATURE_SOFTSERIAL));
+    serialInit(feature(FEATURE_SOFTSERIAL));
 
 #ifdef USE_SERVOS
     mixerInit(masterConfig.mixerMode, customMotorMixer, masterConfig.customServoMixer);
@@ -432,10 +432,10 @@ void init(void)
 
     imuInit();
 
-    mspInit(&masterConfig.serialConfig);
+    mspInit();
 
 #ifdef USE_CLI
-    cliInit(&masterConfig.serialConfig);
+    cliInit();
 #endif
 
     failsafeInit(&masterConfig.rxConfig, masterConfig.flight3DConfig.deadband3d_throttle);
@@ -444,10 +444,7 @@ void init(void)
 
 #ifdef GPS
     if (feature(FEATURE_GPS)) {
-        gpsInit(
-            &masterConfig.serialConfig,
-            &masterConfig.gpsConfig
-        );
+        gpsInit(&masterConfig.gpsConfig);
     }
 #endif
 

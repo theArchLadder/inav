@@ -170,9 +170,8 @@ void gpsPreInit(gpsConfig_t *initialGpsConfig)
     gpsState.gpsConfig = initialGpsConfig;
 }
 
-void gpsInit(serialConfig_t *initialSerialConfig, gpsConfig_t *initialGpsConfig)
+void gpsInit(gpsConfig_t *initialGpsConfig)
 {
-    gpsState.serialConfig = initialSerialConfig;
     gpsState.gpsConfig = initialGpsConfig;
     gpsState.baudrateIndex = 0;
 
