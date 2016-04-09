@@ -15,6 +15,42 @@
  * along with Cleanflight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * MSP Guidelines, emphasis is used to clarify.
+ *
+ * Each FlightController (FC, Server) MUST change the API version when any MSP command is added, deleted, or changed.
+ *
+ * If you fork the FC source code and release your own version, you MUST change the Flight Controller Identifier.
+ *
+ * NEVER release a modified copy of this code that shares the same Flight controller IDENT and API version
+ * if the API doesn't match EXACTLY.
+ *
+ * Consumers of the API (API clients) SHOULD first attempt to get a response from the MSP_API_VERSION command.
+ * If no response is obtained then client MAY try the legacy MSP_IDENT command.
+ *
+ * API consumers should ALWAYS handle communication failures gracefully and attempt to continue
+ * without the information if possible.  Clients MAY log/display a suitable message.
+ *
+ * API clients should NOT attempt any communication if they can't handle the returned API MAJOR VERSION.
+ *
+ * API clients SHOULD attempt communication if the API MINOR VERSION has increased from the time
+ * the API client was written and handle command failures gracefully.  Clients MAY disable
+ * functionality that depends on the commands while still leaving other functionality intact.
+ * Clients SHOULD operate in READ-ONLY mode and SHOULD present a warning to the user to state
+ * that the newer API version may cause problems before using API commands that change FC state.
+ *
+ * It is for this reason that each MSP command should be specific as possible, such that changes
+ * to commands break as little functionality as possible.
+ *
+ * API client authors MAY use a compatibility matrix/table when determining if they can support
+ * a given command from a given flight controller at a given api version level.
+ *
+ * Developers MUST NOT create new MSP commands that do more than one thing.
+ *
+ * Failure to follow these guidelines will likely invoke the wrath of developers trying to write tools
+ * that use the API and the users of those tools.
+ */
+
 #pragma once
 
 /* Protocol numbers used both by the wire format, config system, and
