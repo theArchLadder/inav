@@ -516,7 +516,7 @@ static void updateEstimatedTopic(uint32_t currentTime)
 #endif
 
     /* Apply GPS altitude corrections only on fixed wing aircrafts */
-    bool useGpsZ = STATE(FIXED_WING) && isGPSValid;
+    bool useGpsZ = isGPSValid;
 
     /* Pre-calculate history index for GPS delay compensation */
     int gpsHistoryIndex = (posEstimator.history.index - 1) - constrain(((int)posControl.navConfig->inav.gps_delay_ms / (1000 / INAV_POSITION_PUBLISH_RATE_HZ)), 0, INAV_HISTORY_BUF_SIZE - 1);
