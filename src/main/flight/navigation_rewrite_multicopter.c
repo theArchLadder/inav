@@ -103,10 +103,15 @@ static void updateAltitudeThrottleController_MC(uint32_t deltaMicros)
     // Calculate min and max throttle boundaries (to compensate for integral windup)
     int16_t thrAdjustmentMin = (int16_t)posControl.escAndServoConfig->minthrottle - (int16_t)posControl.navConfig->mc_hover_throttle;
     int16_t thrAdjustmentMax = (int16_t)posControl.escAndServoConfig->maxthrottle - (int16_t)posControl.navConfig->mc_hover_throttle;
+    
+    // Derivative on measurement. The plus sign in "+=" makes this incremental.
+    //posControl.rcAdjustment[THROTTLE] += navPidApply2(posControl.desiredState.vel.V.Z, posControl.actualState.vel.V.Z, US2S(deltaMicros), &posControl.pids.vel[Z], thrAdjustmentMin, thrAdjustmentMax, false);
+    
+    // Derivative on error. The plus sign in "+=" makes this incremental.
+    posControl.rcAdjustment[THROTTLE] += navPidApply2(posControl.desiredState.vel.V.Z, posControl.actualState.vel.V.Z, US2S(deltaMicros), &posControl.pids.vel[Z], thrAdjustmentMin, thrAdjustmentMax, true);
 
-    posControl.rcAdjustment[THROTTLE] = navPidApply2(posControl.desiredState.vel.V.Z, posControl.actualState.vel.V.Z, US2S(deltaMicros), &posControl.pids.vel[Z], thrAdjustmentMin, thrAdjustmentMax, false);
-
-    posControl.rcAdjustment[THROTTLE] = filterApplyPt1(posControl.rcAdjustment[THROTTLE], &altholdThrottleFilterState, NAV_THROTTLE_CUTOFF_FREQENCY_HZ, US2S(deltaMicros));
+    // No filters during devlopment, to see what the controller actually does.
+    //posControl.rcAdjustment[THROTTLE] = filterApplyPt1(posControl.rcAdjustment[THROTTLE], &altholdThrottleFilterState, NAV_THROTTLE_CUTOFF_FREQENCY_HZ, US2S(deltaMicros));
     posControl.rcAdjustment[THROTTLE] = constrain(posControl.rcAdjustment[THROTTLE], thrAdjustmentMin, thrAdjustmentMax);
 }
 
@@ -175,7 +180,17 @@ void resetMulticopterAltitudeController(void)
     navPidReset(&posControl.pids.surface);
     filterResetPt1(&altholdThrottleFilterState, 0.0f);
     posControl.desiredState.vel.V.Z = posControl.actualState.vel.V.Z;   // Gradually transition from current climb
-    posControl.rcAdjustment[THROTTLE] = 0;
+    //posControl.rcAdjustment[THROTTLE] = 0;
+    
+    // Start with throttle at current throttle value.
+    posControl.rcAdjustment[THROTTLE] = (int16_t)rcCommand[THROTTLE] - (int16_t)posControl.navConfig->mc_hover_throttle;
+    
+    // Prevent derivative kick on activation.
+    // Derivative of measurement.
+    //posControl.pids.vel[Z].last_input = posControl.actualState.vel.V.Z;
+    // Derivative of error.
+    //posControl.pids.vel[Z].last_input = posControl.desiredState.vel.V.Z - posControl.actualState.vel.V.Z; // = 0
+    posControl.pids.vel[Z].last_input = 0;
 
     /* Prevent jump if activated with zero throttle - start with -50% throttle adjustment. That's obviously too much, but it will prevent jumping */
     if (prepareForTakeoffOnReset) {
